@@ -9,6 +9,7 @@ export type KnownNodeType =
   | "vless"
   | "trojan"
   | "anytls"
+  | "miu"
   | "hysteria"
   | "hysteria2"
   | "tuic"
@@ -231,6 +232,23 @@ export interface AnyTLSNode extends BaseNode {
   "padding-scheme"?: string;
 }
 
+export interface MiuNode extends BaseNode {
+  type: "miu";
+  psk: string;
+  udp?: boolean;
+  tls?: boolean;
+  sni?: string;
+  servername?: string;
+  alpn?: string[];
+  fingerprint?: string;
+  "skip-cert-verify"?: boolean;
+  "client-fingerprint"?: string;
+  "reality-opts"?: VLESSNode["reality-opts"];
+  "idle-session-timeout"?: number;
+  "min-idle-session"?: number;
+  "padding-scheme"?: string[];
+}
+
 export interface HysteriaNode extends BaseNode {
   type: "hysteria";
   protocol?: string;
@@ -410,6 +428,7 @@ export type ParsedNode =
   | VLESSNode
   | TrojanNode
   | AnyTLSNode
+  | MiuNode
   | HysteriaNode
   | Hysteria2Node
   | TuicNode

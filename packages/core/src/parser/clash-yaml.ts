@@ -11,6 +11,7 @@ import { normalizeSsPlugin } from "./protocols/ss";
 import { splitWsPathEarlyData } from "./ws-early-data";
 import { getNodeEndpointError } from "../node-endpoint";
 import { MIHOMO_STRING_SCALAR_FIELDS, normalizeMihomoStringScalar } from "../mihomo/string-scalar";
+import { normalizeMiuNode } from "../mihomo/miu";
 
 interface ClashConfig {
   proxies?: Record<string, unknown>[];
@@ -39,17 +40,27 @@ function applyWsEarlyDataInPlace(node: Record<string, unknown>) {
   record["max-early-data"] = earlyData;
 }
 
-function normalizeClashYamlScalarText(content: string): string {
-  return content.replace(
-    /^(\s*short-id\s*:\s*)([0-9]+)(\s*(?:#.*)?)$/gm,
-    (_match, prefix: string, value: string, suffix: string) => `${prefix}"${value}"${suffix || ""}`
-  );
-}
-
 function countLeadingSpaces(line: string): number {
   let count = 0;
   while (count < line.length && line.charCodeAt(count) === 32) count += 1;
   return count;
+}
+
+function hasMultilineScalar(content: string): boolean {
+  if (/(?:^|[\s:])[|>][+-]?[1-9]?[+-]?[ \t]*(?:#.*)?$/m.test(content)) return true;
+  let quote = "";
+  for (const line of content.split(/\r?\n/)) {
+    for (let index = 0; index < line.length; index += 1) {
+      const char = line[index];
+      if (!quote && char === "#" && (index === 0 || /\s/.test(line[index - 1]))) break;
+      if (quote === '"' && char === "\\") { index += 1; continue; }
+      if (quote === "'" && char === "'" && line[index + 1] === "'") { index += 1; continue; }
+      if (char === quote) quote = "";
+      else if (!quote && (char === '"' || char === "'")) quote = char;
+    }
+    if (quote) return true;
+  }
+  return false;
 }
 
 function isRootProxiesKey(trimmed: string): boolean {
@@ -163,16 +174,15 @@ export function parseClashYaml(content: string): ParseResult {
   const errors: string[] = [];
 
   try {
-    const normalizeTabs = (s: string) => s.replace(/\t/g, "  ");
-
     const tryLoad = loadSubscriptionYaml;
-    const normalizedContent = normalizeClashYamlScalarText(normalizeTabs(content));
 
     let parsed: unknown;
     try {
-      parsed = tryLoad(normalizedContent);
+      parsed = tryLoad(content);
     } catch (e) {
-      // 尝试修复缩进后再解析一次
+      // Never rewrite multiline scalar contents while repairing invalid indentation.
+      if (hasMultilineScalar(content)) throw e;
+      const normalizedContent = content.replace(/^[ \t]+/gm, (indent) => indent.replace(/\t/g, "  "));
       const repaired = repairRootFlowProxyListIndent(repairInlineListIndent(normalizedContent));
       parsed = tryLoad(repaired);
     }
@@ -248,9 +258,13 @@ export function parseClashYaml(content: string): ParseResult {
       totalFailed: errors.length,
     };
   } catch (e) {
+    const mark = e && typeof e === "object" && "mark" in e ? e.mark as { line?: unknown; column?: unknown } : undefined;
+    const location = typeof mark?.line === "number" && typeof mark.column === "number"
+      ? `（第 ${mark.line + 1} 行，第 ${mark.column + 1} 列）` : "";
     return {
       nodes: [],
-      errors: [`YAML 解析错误: ${e instanceof Error ? e.message : "未知错误"}`],
+      // Parser exception messages can include a snippet containing credentials.
+      errors: [`YAML 解析错误${location}`],
       totalParsed: 0,
       totalFailed: 1,
     };
@@ -273,6 +287,14 @@ function normalizeNode(proxy: Record<string, unknown>): ParsedNode | null {
 
   const name = (proxy.name as string) || "未命名节点";
   proxy = { ...proxy };
+  if (type === "miu" && proxy.psk instanceof Uint8Array) {
+    try {
+      // An explicit YAML !!binary tag is decoded by the YAML parser, not by Miu.
+      proxy.psk = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true }).decode(proxy.psk);
+    } catch {
+      throw new Error("Miu 的 !!binary psk 必须是有效 UTF-8");
+    }
+  }
   for (const field of MIHOMO_STRING_SCALAR_FIELDS) {
     if (proxy[field] === undefined || proxy[field] === null) continue;
     const value = normalizeMihomoStringScalar(proxy[field]);
@@ -415,6 +437,9 @@ function normalizeNode(proxy: Record<string, unknown>): ParsedNode | null {
         "ws-opts": proxy["ws-opts"] as { path?: string; headers?: Record<string, string> },
         "grpc-opts": proxy["grpc-opts"] as { "grpc-service-name"?: string },
       };
+
+    case "miu":
+      return normalizeMiuNode(canonicalizeParsedNode(baseNode)) as unknown as ParsedNode;
 
     case "anytls":
       return {

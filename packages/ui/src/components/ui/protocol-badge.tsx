@@ -8,6 +8,7 @@ const PROTOCOL_BADGE_COLORS: Record<string, string> = {
   vless: "bg-emerald-500/20 text-emerald-200 border-emerald-500/20",
   trojan: "bg-red-500/20 text-red-200 border-red-500/20",
   anytls: "bg-teal-500/20 text-teal-200 border-teal-500/20",
+  miu: "bg-indigo-500/20 text-indigo-200 border-indigo-500/20",
   hysteria2: "bg-orange-500/20 text-orange-200 border-orange-500/20",
   hy2: "bg-orange-500/20 text-orange-200 border-orange-500/20",
   tuic: "bg-cyan-500/20 text-cyan-200 border-cyan-500/20",

@@ -41,6 +41,27 @@
 
 ## 开发说明
 
+### Miu 节点
+
+支持导入包含 `type: miu` 的 Mihomo YAML，以及 Base64 编码的 YAML 或节点链接。生成的配置需要使用**已接入 Miu 出站的 Mihomo 内核**；普通 Mihomo 内核不能加载 Miu 节点。SubBoost 负责转换订阅，实际连接由客户端内核完成。
+
+```yaml
+proxies:
+  - name: Miu 示例
+    type: miu
+    server: node.example.com
+    port: 443
+    psk: "replace-with-your-psk"
+    udp: true
+    sni: www.example.com
+    client-fingerprint: chrome
+    # reality-opts: {public-key: "<public-key>", short-id: "0123456789abcdef"}
+    # idle-session-timeout: 30
+    # min-idle-session: 2
+```
+
+Miu 上游目前没有定义分享链接格式。SubBoost 额外接受 `miu://<URL编码的PSK>@<服务器>:<端口>?sni=<域名>&udp=1#<名称>` 作为导入兼容格式；REALITY 可使用 `security=reality`、`pbk`、`sid` 和 `fp` 参数。还支持 `alpn`、`fingerprint`（证书 SHA-256）、`allowInsecure`、`idle-session-timeout`、`min-idle-session`。PSK 至少 16 字节；普通字符串原样使用，不会当作 Base64 解码。显式 YAML `!!binary` 标签遵循 YAML 解码规则，且解码后须为有效 UTF-8。
+
 开发者可以从源码启动本地开发环境：
 
 ```bash

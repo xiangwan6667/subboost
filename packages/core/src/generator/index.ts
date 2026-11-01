@@ -36,6 +36,8 @@ import type { DialerProxyGroup } from "@subboost/core/types/template-config";
 import { collectDnsPolicyEntries, configToYaml } from "./yaml";
 import { shareHealthChecks } from "./shared-health-checks";
 import { isMihomoSupportedProxyNode, normalizeMihomoVlessForGeneration } from "../mihomo/proxy-sanitizer";
+import { isMiuRealityFingerprint, normalizeMiuNode } from "../mihomo/miu";
+import { canonicalizeParsedNode } from "../parser/canonical-fields";
 import { getValidDialerRelayGroupNames } from "../subscription/dialer-relay-group-names";
 import { chooseFallbackPolicyTarget, withBuiltinPolicyTargets } from "./policy-targets";
 import { resolveGroupListenerEntries, type GroupListenerTargetResolution } from "./group-listeners";
@@ -224,23 +226,41 @@ export function generateClashConfig(options: GenerateOptions): ClashConfig {
   // 特别是 Reality short-id（有些机场会给纯数字，如 7053 / 7250）
   const normalizedNodes = nodes.map((node) => {
     if (!node || typeof node !== "object") return node;
-    const typed = node as unknown as Record<string, unknown>;
+    const raw = node as unknown as Record<string, unknown>;
+    let typed = raw.type === "miu" ? canonicalizeParsedNode(raw) : raw;
+    if (raw.type === "miu") {
+      try {
+        typed = normalizeMiuNode(typed);
+      } catch {
+        return typed as unknown as ParsedNode;
+      }
+    }
     const type = typeof typed.type === "string" ? typed.type : "";
     const hasClientFingerprint =
       typeof typed["client-fingerprint"] === "string" && Boolean(String(typed["client-fingerprint"]).trim());
-    const supportsClientFingerprint = type === "vmess" || type === "vless" || type === "trojan" || type === "anytls";
+    const supportsClientFingerprint = type === "vmess" || type === "vless" || type === "trojan" || type === "anytls" || type === "miu";
     const shouldApplyBaseFingerprint =
       Boolean(baseConfigClientFingerprint) &&
       supportsClientFingerprint &&
       !hasClientFingerprint &&
+      !(type === "miu" && typed["reality-opts"] && !isMiuRealityFingerprint(baseConfigClientFingerprint)) &&
       (type === "trojan" ||
         type === "anytls" ||
+        type === "miu" ||
         (typeof typed.tls === "boolean" && typed.tls) ||
         (type === "vless" && Boolean(typed["reality-opts"])));
     const nextBase = shouldApplyBaseFingerprint
       ? { ...typed, "client-fingerprint": baseConfigClientFingerprint }
       : typed;
 
+    if (type === "miu") {
+      try {
+        return normalizeMiuNode(nextBase, true) as unknown as ParsedNode;
+      } catch {
+        // The existing supported-node filter excludes invalid saved nodes below.
+        return nextBase as unknown as ParsedNode;
+      }
+    }
     if (type !== "vless") return nextBase as unknown as ParsedNode;
     return normalizeMihomoVlessForGeneration(nextBase) as unknown as ParsedNode;
   });

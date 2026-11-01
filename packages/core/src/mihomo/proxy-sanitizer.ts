@@ -8,6 +8,7 @@ import { normalizeProtocolFields } from "./protocol-fields";
 import { normalizeCertificateFingerprint } from "./certificate-fingerprint";
 import { getNodeEndpointError } from "../node-endpoint";
 import { MIHOMO_STRING_SCALAR_FIELDS, normalizeMihomoStringScalar } from "./string-scalar";
+import { normalizeMiuNode } from "./miu";
 
 const WIREGUARD_KEY_PATTERN = /^[A-Za-z0-9+/]{43}=$/;
 const SSH_SERVER_FINGERPRINT_PATTERN = /^SHA256:[A-Za-z0-9+/]{43}=?$/;
@@ -36,6 +37,7 @@ const REQUIRED_STRING_FIELDS_BY_TYPE: Record<string, string[]> = {
   vless: ["uuid"],
   trojan: ["password"],
   anytls: ["password"],
+  miu: ["psk"],
   hysteria2: ["password"],
   snell: ["psk"],
 };
@@ -175,6 +177,14 @@ export function isMihomoSupportedProxyNode(node: unknown): boolean {
   const requiredFields = REQUIRED_STRING_FIELDS_BY_TYPE[type] || [];
   for (const field of requiredFields) {
     if (!normalizeString(normalizeMihomoStringScalar(node[field]))) return false;
+  }
+
+  if (type === "miu") {
+    try {
+      normalizeMiuNode(node);
+    } catch {
+      return false;
+    }
   }
 
   if (type === "wireguard") {

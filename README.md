@@ -41,6 +41,12 @@
 
 ## Development Notes
 
+### Miu nodes
+
+Import Mihomo YAML containing `type: miu`, or Base64-encoded YAML or node links. Generated configurations require a **Mihomo build with the Miu outbound**; an ordinary Mihomo build cannot load these nodes. SubBoost converts the subscription, while the client handles the actual connection.
+
+Miu does not define an official share-link format. As an import-only compatibility extension, SubBoost accepts `miu://<URL-encoded-PSK>@<server>:<port>?sni=<hostname>&udp=1#<name>`. REALITY parameters are `security=reality`, `pbk`, `sid`, and `fp`; `alpn`, `fingerprint` (certificate SHA-256), `allowInsecure`, `idle-session-timeout`, and `min-idle-session` are also supported. The PSK must be at least 16 bytes; ordinary strings are not Base64-decoded. An explicit YAML `!!binary` tag is decoded by the YAML parser and must contain valid UTF-8. See the [Chinese README](README-CN.md#miu-节点) for a YAML example.
+
 Developers can start a local development environment from source:
 
 ```bash
