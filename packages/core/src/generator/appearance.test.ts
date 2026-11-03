@@ -17,6 +17,17 @@ describe("group appearance", () => {
     const saved=generateClashConfig({...options,groupAppearance:{imagesEnabled:false,emojisEnabled:true,groups:{}}});
     expect(JSON.parse(JSON.stringify(saved))).toEqual(JSON.parse(JSON.stringify(old)));
   });
+  it.each([[false,true,false],[true,false,false],[true,true,true]])("respects crypto emoji masters=%s group=%s",(master,group,visible)=>{
+    const options: Parameters<typeof generateClashConfig>[0]={
+      nodes:[],userConfig:{enabledGroups:["select","crypto","final"]},
+      groupAppearance:{imagesEnabled:true,emojisEnabled:master,groups:{"module:crypto":{emojiEnabled:group}}},
+    };
+    const output=generateClashConfig(options);
+    const crypto=output["proxy-groups"]!.find(g=>g.name.includes("加密货币"))!;
+    expect(crypto.name).toBe(visible ? "₿ 加密货币" : "加密货币");
+    expect(crypto.icon).toContain("/Binance/Binance.png");
+    expect(output.rules!.some(r=>r.endsWith(`,${crypto.name}`))).toBe(true);
+  });
   it.each([[true,true],[true,false],[false,true],[false,false]])("combines masters %s / %s", (image, emoji) => {
     const c = generate(image, emoji);
     const group = c["proxy-groups"]!.find(g => g.name.includes("云服务"))!;

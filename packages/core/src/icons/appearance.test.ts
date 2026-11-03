@@ -21,6 +21,13 @@ describe("appearance catalogue and persistence contract", () => {
     expect(splitGroupEmoji("🚀").label).toBe("🚀");
     expect(resolveGroupAppearance(undefined,"module:select","🚀 节点选择")).toMatchObject({name:"🚀 节点选择",icon:undefined});
   });
+  it("treats the builtin Bitcoin symbol as an appearance prefix without stripping currency text",()=>{
+    expect(splitGroupEmoji("₿ 加密货币")).toEqual({emoji:"₿",label:"加密货币"});
+    expect(splitGroupEmoji("₿基金")).toEqual({emoji:"",label:"₿基金"});
+    expect(splitGroupEmoji("$ Budget")).toEqual({emoji:"",label:"$ Budget"});
+    expect(resolveGroupAppearance(newGroupAppearance(),"module:crypto","₿ 加密货币").name).toBe("加密货币");
+    expect(resolveGroupAppearance(undefined,"module:crypto","₿ 加密货币").name).toBe("₿ 加密货币");
+  });
   it("keeps individual and manual choices across master cycles", () => {
     const s=newGroupAppearance();s.groups["custom:c"]={iconMode:"manual",iconId:"Binance",emoji:"💎",emojiEnabled:true};
     s.emojisEnabled=true;

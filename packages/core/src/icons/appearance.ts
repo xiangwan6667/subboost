@@ -62,12 +62,14 @@ export function iconUrl(id?: string): string | undefined {
 }
 const graphemes = new Intl.Segmenter("en", { granularity: "grapheme" });
 export function splitGroupEmoji(name: string): { emoji: string; label: string } {
+  const s = name.trim();
   let offset = 0;
-  for (const { segment, index } of graphemes.segment(name.trim())) {
-    if (/^\s+$/u.test(segment) || /\p{Extended_Pictographic}|\p{Regional_Indicator}|\u20e3/u.test(segment)) offset = index + segment.length;
+  for (const { segment, index } of graphemes.segment(s)) {
+    // The builtin crypto prefix is a currency symbol, outside Unicode emoji properties.
+    const bitcoinPrefix = segment === "₿" && /^\s/u.test(s.slice(index + segment.length));
+    if (bitcoinPrefix || /^\s+$/u.test(segment) || /\p{Extended_Pictographic}|\p{Regional_Indicator}|\u20e3/u.test(segment)) offset = index + segment.length;
     else break;
   }
-  const s = name.trim();
   return { emoji: s.slice(0, offset).trim(), label: s.slice(offset).trim() || s };
 }
 export function resolveGroupAppearance(settings: GroupAppearance | undefined, key: string, name: string, defaultIconId?: string) {
