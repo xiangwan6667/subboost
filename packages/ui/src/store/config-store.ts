@@ -89,6 +89,9 @@ export const useConfigStore = create<ConfigState & ConfigActions>()(
         normalizePersistedConfigState(persistedState, {
           discardDraft: !isCompatibleConfigDraftVersion(version),
         }),
+      merge: (persistedState, currentState) => persistedState && typeof persistedState === "object"
+        ? { ...currentState, ...normalizePersistedConfigState(persistedState) }
+        : currentState,
       partialize: partializeConfigState,
     }
   )

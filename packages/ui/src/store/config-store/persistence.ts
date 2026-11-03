@@ -1,3 +1,4 @@
+import { normalizeGroupAppearance } from "@subboost/core/icons/appearance";
 import type { ConfigState } from "./definitions";
 import { safeParseJsonObject } from "@subboost/core/json";
 import { normalizeNodeNameFilterConfig } from "@subboost/core/subscription/node-name-filter";
@@ -88,6 +89,7 @@ export function normalizePersistedConfigState(
     ...(typeof state.allowLan === "boolean" ? { allowLan: state.allowLan } : {}),
     ...(typeof state.testUrl === "string" ? { testUrl: state.testUrl } : {}),
     ...(typeof state.testInterval === "number" ? { testInterval: state.testInterval } : {}),
+    groupAppearance: normalizeGroupAppearance(state.groupAppearance),
     sharedHealthChecks: state.sharedHealthChecks === true,
     ...(typeof state.ruleProviderBaseUrl === "string" ? { ruleProviderBaseUrl: state.ruleProviderBaseUrl } : {}),
     ...(typeof state.proxyGroupAdvancedModeEnabled === "boolean"
@@ -110,6 +112,7 @@ export function partializeConfigState(state: ConfigState): Partial<ConfigState> 
     allowLan: state.allowLan,
     testUrl: state.testUrl,
     testInterval: state.testInterval,
+    groupAppearance: state.groupAppearance,
     sharedHealthChecks: state.sharedHealthChecks,
     ruleProviderBaseUrl: state.ruleProviderBaseUrl,
     proxyGroupAdvancedModeEnabled: state.proxyGroupAdvancedModeEnabled,

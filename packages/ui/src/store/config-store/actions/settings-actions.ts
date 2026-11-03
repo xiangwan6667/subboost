@@ -4,6 +4,7 @@ import type { GetState, SetAndGenerateConfig, SetState } from "../store-types";
 
 type SettingsActions = Pick<
   ConfigActions,
+  | "setGroupAppearance"
   | "setDnsYaml"
   | "setMixedPort"
   | "setAllowLan"
@@ -23,6 +24,9 @@ export function createSettingsActions(
   setAndGenerateConfig: SetAndGenerateConfig
 ): SettingsActions {
   return {
+    setGroupAppearance: (groupAppearance) => {
+      setAndGenerateConfig(() => ({ groupAppearance }));
+    },
     setDnsYaml: (yaml: string) => {
       setAndGenerateConfig(() => ({ dnsYaml: yaml }));
     },

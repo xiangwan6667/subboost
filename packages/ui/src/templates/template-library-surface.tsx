@@ -85,6 +85,7 @@ function TemplateLibraryInner({ adapter }: Props) {
     customRules,
     ruleOrder,
     dialerProxyGroups,
+    groupAppearance,
     proxyGroupNameOverrides,
     dnsYaml,
     mixedPort,
@@ -298,6 +299,7 @@ function TemplateLibraryInner({ adapter }: Props) {
         description: uploadDescription,
         config: {
           schema: "subboost-template-config/v1",
+          ...(groupAppearance ? { groupAppearance } : {}),
           template,
           enabledProxyGroups,
           hiddenProxyGroups,

@@ -1,3 +1,4 @@
+import { normalizeGroupAppearance } from "../icons/appearance";
 import { PROXY_GROUP_MODULES } from "@subboost/core/generator/proxy-groups";
 import { normalizePersistedRuleOrder } from "@subboost/core/generator/rules";
 import { ensureCustomRuleId, isCustomRuleType } from "@subboost/core/rules/custom-rule-utils";
@@ -64,6 +65,8 @@ export function validateSubBoostTemplateConfig(value: unknown): ValidationResult
     return invalid("至少需要一个可见代理组");
   }
 
+  const groupAppearance = normalizeGroupAppearance(value.groupAppearance);
+  if (value.groupAppearance !== undefined && !groupAppearance) return invalid("groupAppearance 外观设置无效");
   const customProxyGroups = parseCustomProxyGroups(value.customProxyGroups);
   if (!customProxyGroups.ok) return customProxyGroups;
   const proxyGroupAdvanced = parseProxyGroupAdvanced(value.proxyGroupAdvanced);
@@ -125,6 +128,7 @@ export function validateSubBoostTemplateConfig(value: unknown): ValidationResult
     ok: true,
     config: {
       schema: SUBBOOST_TEMPLATE_CONFIG_SCHEMA,
+      ...(groupAppearance ? { groupAppearance } : {}),
       template,
       enabledProxyGroups: enabledProxyGroups.value,
       hiddenProxyGroups: hiddenProxyGroups.value,

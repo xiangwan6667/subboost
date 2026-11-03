@@ -1,3 +1,5 @@
+import { ensureUniqueProxyNames } from "./proxy-names";
+import { applyGroupAppearance, BUILTIN_ICON_IDS, type GroupAppearance } from "../icons/appearance";
 /**
  * Clash 配置生成器 - 浏览器端运行
  */
@@ -43,6 +45,7 @@ import { chooseFallbackPolicyTarget, withBuiltinPolicyTargets } from "./policy-t
 import { resolveGroupListenerEntries, type GroupListenerTargetResolution } from "./group-listeners";
 
 export interface GenerateOptions {
+  groupAppearance?: GroupAppearance;
   nodes: ParsedNode[];
   proxyProviders?: Record<string, unknown>;
   template?: TemplateType;
@@ -144,39 +147,6 @@ function normalizeBaseConfigPatch(baseConfig: Record<string, unknown>): Record<s
       "nameserver-policy": Object.fromEntries(dnsPolicyEntries),
     },
   };
-}
-
-/**
- * Clash 要求 proxies.name 全局唯一，否则会报 duplicate name。
- * 多机场/多订阅源合并时经常出现同名节点，因此在生成前做一次“稳定重命名”。
- *
- * 规则：保留第一次出现的原名；从第二次起追加 " (2)/(3)..." 后缀。
- */
-function ensureUniqueProxyNames(nodes: ParsedNode[]): ParsedNode[] {
-  const used = new Set<string>();
-  const counter = new Map<string, number>();
-
-  return nodes.map((node) => {
-    const baseRaw = typeof node?.name === "string" ? node.name : String((node as unknown as { name?: unknown })?.name ?? "");
-    const base = baseRaw.trim() || "未命名节点";
-
-    if (!used.has(base)) {
-      used.add(base);
-      counter.set(base, 1);
-      return base === node.name ? node : ({ ...(node as unknown as Record<string, unknown>), name: base } as unknown as ParsedNode);
-    }
-
-    let i = counter.get(base) || 1;
-    let candidate = `${base} (${i + 1})`;
-    while (used.has(candidate)) {
-      i += 1;
-      candidate = `${base} (${i + 1})`;
-    }
-
-    counter.set(base, i + 1);
-    used.add(candidate);
-    return { ...(node as unknown as Record<string, unknown>), name: candidate } as unknown as ParsedNode;
-  });
 }
 
 /**
@@ -611,7 +581,12 @@ export function generateClashConfig(options: GenerateOptions): ClashConfig {
     }),
   };
 
-  return (config.sharedHealthChecks === true ? shareHealthChecks(clashConfig) : clashConfig) as unknown as ClashConfig;
+  const presented = applyGroupAppearance(clashConfig as unknown as ClashConfig, options.groupAppearance, [
+    ...PROXY_GROUP_MODULES.map(m => ({ key: `module:${m.id}`, name: resolveProxyGroupModuleName(m, proxyGroupNameOverrides?.[m.id]), defaultIconId: proxyGroupNameOverrides?.[m.id]?.trim() ? undefined : BUILTIN_ICON_IDS[m.id] })),
+    ...customProxyGroups.map(g => ({ key: `custom:${g.id}`, name: g.name })),
+    ...dialerProxyGroups.map(g => ({ key: `dialer:${g.id}`, name: g.name })),
+  ]);
+  return (config.sharedHealthChecks === true ? shareHealthChecks(presented) : presented) as unknown as ClashConfig;
 }
 
 /**

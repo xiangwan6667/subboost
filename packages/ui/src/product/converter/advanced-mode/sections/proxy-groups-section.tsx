@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { GroupAppearanceSettings } from "./group-appearance-settings";
 import { Layers } from "lucide-react";
 import { Badge } from "@subboost/ui/components/ui/badge";
 import { PROXY_GROUP_MODULES } from "@subboost/core/generator/proxy-groups";
@@ -22,6 +23,7 @@ export function ProxyGroupsSection({
 
   return (
     <div>
+      <div className="flex items-center gap-1">
       <SectionHeader
         icon={Layers}
         title="分流代理组"
@@ -33,6 +35,8 @@ export function ProxyGroupsSection({
           </Badge>
         }
       />
+      <GroupAppearanceSettings />
+      </div>
 
       {isExpanded && (
         <div className="mt-2 space-y-2 pl-6">

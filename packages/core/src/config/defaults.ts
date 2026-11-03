@@ -1,3 +1,4 @@
+import { newGroupAppearance } from "../icons/appearance";
 import { DEFAULT_DNS_CONFIG } from "@subboost/core/generator/dns";
 import { DEFAULT_RULE_PROVIDER_BASE_URL } from "@subboost/core/rules/metadata";
 import { TEMPLATES } from "@subboost/core/templates";
@@ -83,6 +84,7 @@ export function buildDefaultSubBoostTemplateConfig(type: TemplateType): SubBoost
   const template = TEMPLATES[type];
   return {
     schema: SUBBOOST_TEMPLATE_CONFIG_SCHEMA,
+    groupAppearance: newGroupAppearance(),
     template: type,
     enabledProxyGroups: template.groups,
     hiddenProxyGroups: [],

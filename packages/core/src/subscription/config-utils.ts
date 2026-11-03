@@ -1,3 +1,4 @@
+import { normalizeGroupAppearance } from "../icons/appearance";
 import type { GenerateOptions } from "@subboost/core/generator";
 import { normalizePersistedRuleOrder } from "@subboost/core/generator/rules";
 import type { DialerProxyGroup } from "@subboost/core/types/template-config";
@@ -343,6 +344,7 @@ export function buildGenerateOptionsFromConfig(
 
   return {
     nodes: sanitizedNodes,
+    groupAppearance: normalizeGroupAppearance(config.groupAppearance),
     ...(proxyProviders ? { proxyProviders } : {}),
     template,
     userConfig,

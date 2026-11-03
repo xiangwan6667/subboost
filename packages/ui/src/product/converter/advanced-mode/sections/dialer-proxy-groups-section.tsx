@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { GroupAppearanceSettings } from "./group-appearance-settings";
 import { Check, ChevronDown, ChevronRight, Link as LinkIcon, Pencil, Plus, Search, SlidersHorizontal, Trash2, X } from "lucide-react";
 import { Badge } from "@subboost/ui/components/ui/badge";
 import { Button } from "@subboost/ui/components/ui/button";
@@ -305,6 +306,7 @@ export function DialerProxyGroupsSection({
                   />
                 ) : (
                   <div className="pointer-events-none relative z-10 flex min-w-0 items-center gap-1">
+                    <GroupAppearanceSettings groupKey={`dialer:${group.id}`} name={group.name} />
                     <span className="text-sm font-medium text-fg truncate" title={group.name}>
                       {group.name}
                     </span>

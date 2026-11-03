@@ -419,6 +419,7 @@ export function ProxyGroupsCustomGroupsPanel({
               <ProxyGroupsModuleCard
                 key={group.id}
                 module={cardModule}
+                appearanceKey={`custom:${group.id}`}
                 display={{ full: group.name }}
                 isCore={false}
                 isEnabled={group.enabled !== false}

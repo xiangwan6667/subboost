@@ -1,3 +1,4 @@
+import type { GroupAppearance } from "../icons/appearance";
 import type {
   BuiltinRuleEdits,
   CustomProxyGroup,
@@ -22,6 +23,7 @@ export interface DialerProxyGroup {
 }
 
 export type SubBoostTemplateConfig = {
+  groupAppearance?: GroupAppearance;
   schema?: "subboost-template-config/v1";
   template: TemplateType;
   enabledProxyGroups: string[];

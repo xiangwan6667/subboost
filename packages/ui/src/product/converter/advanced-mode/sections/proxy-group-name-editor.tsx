@@ -132,6 +132,7 @@ export function pickRandomEmoji(current = ""): string {
 
 export function ProxyGroupNameEditor({
   value,
+  emojiOnly = false,
   onChange,
   namePlaceholder = "代理组名称",
   allowEmptyEmoji = true,
@@ -139,6 +140,7 @@ export function ProxyGroupNameEditor({
   className,
   onKeyDown,
 }: {
+  emojiOnly?: boolean;
   value: ProxyGroupNameDraftInput;
   onChange: (value: ProxyGroupNameDraft) => void;
   namePlaceholder?: string;
@@ -216,14 +218,14 @@ export function ProxyGroupNameEditor({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <Input
+      {!emojiOnly && <Input
         value={draft.name}
         onChange={(e) => onChange({ ...draft, name: e.target.value })}
         className="h-7 min-w-0 flex-1 text-xs"
         placeholder={namePlaceholder}
         autoFocus={autoFocus}
         onKeyDown={onKeyDown}
-      />
+      />}
     </div>
   );
 }

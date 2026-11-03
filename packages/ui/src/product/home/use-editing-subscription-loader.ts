@@ -1,5 +1,7 @@
 "use client";
 
+import { normalizeGroupAppearance } from "@subboost/core/icons/appearance";
+
 import * as React from "react";
 import type { SubscriptionSource } from "@subboost/ui/store/config-store";
 import type { ParsedNode } from "@subboost/core/types/node";
@@ -524,6 +526,7 @@ export function useEditingSubscriptionLoader({
           customProxyGroups: customProxyGroupsFromCfg as any,
           customRuleSets: customRuleSetsFromCfg,
           builtinRuleEdits: builtinRuleEditsFromCfg,
+          groupAppearance: normalizeGroupAppearance(cfg.groupAppearance),
           proxyGroupAdvanced: proxyGroupAdvancedFromCfg,
           proxyGroupAdvancedModeEnabled: proxyGroupAdvancedModeEnabledFromCfg,
           moduleRuleEditWarningAccepted:

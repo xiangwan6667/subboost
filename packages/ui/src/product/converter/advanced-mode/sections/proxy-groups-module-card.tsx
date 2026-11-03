@@ -1,6 +1,8 @@
 "use client";
 
 import * as React from "react";
+import { GroupAppearanceSettings } from "./group-appearance-settings";
+import { BUILTIN_ICON_IDS } from "@subboost/core/icons/appearance";
 import { Check, ChevronDown, ChevronRight, HelpCircle, Pencil, SlidersHorizontal, Trash2, X } from "lucide-react";
 import { Button } from "@subboost/ui/components/ui/button";
 import { IconButton } from "@subboost/ui/components/ui/icon-button";
@@ -81,6 +83,7 @@ function ModuleHintPopover({ moduleId }: { moduleId: string }) {
 
 export function ProxyGroupsModuleCard({
   module,
+  appearanceKey,
   display,
   isCore,
   isEnabled,
@@ -131,6 +134,7 @@ export function ProxyGroupsModuleCard({
   nodeCount = 0,
   renderAdvancedContent,
 }: {
+  appearanceKey?: string;
   module: ProxyGroupModule;
   display: { full: string };
   isCore: boolean;
@@ -327,6 +331,7 @@ export function ProxyGroupsModuleCard({
           ) : (
             <div className="proxy-group-module-header flex min-w-0 w-full flex-wrap items-center justify-between gap-x-2 gap-y-1">
               <div className="flex min-w-0 max-w-full items-center gap-2">
+                <GroupAppearanceSettings groupKey={appearanceKey ?? `module:${module.id}`} name={display.full} emoji={module.emoji} defaultIconId={!appearanceKey && !proxyGroupNameOverrides[module.id]?.trim() ? BUILTIN_ICON_IDS[module.id] : undefined} />
                 <span className="min-w-0 break-words text-sm font-medium text-fg">
                   {display.full}
                 </span>

@@ -1,3 +1,4 @@
+import { normalizeGroupAppearance, newGroupAppearance } from "@subboost/core/icons/appearance";
 import { getBuiltinTemplateId } from "@subboost/core/templates/builtin";
 import { TEMPLATES } from "@subboost/core/templates";
 import { ensureCustomRulesHaveIds } from "@subboost/core/rules/custom-rule-utils";
@@ -42,6 +43,7 @@ export function createTemplateActions(
       const templateConfig = TEMPLATES[template];
       setAndGenerateConfig(() => ({
         template,
+        groupAppearance: newGroupAppearance(),
         enabledProxyGroups: templateConfig.groups,
         hiddenProxyGroups: [],
         appliedTemplateId: getBuiltinTemplateId(template),
@@ -169,6 +171,7 @@ export function createTemplateActions(
           mixedPort: typeof config.mixedPort === "number" ? config.mixedPort : state.mixedPort,
           allowLan: typeof config.allowLan === "boolean" ? config.allowLan : state.allowLan,
           testUrl: typeof config.testUrl === "string" ? config.testUrl : state.testUrl,
+          groupAppearance: normalizeGroupAppearance(config.groupAppearance),
           sharedHealthChecks: config.sharedHealthChecks === true,
           testInterval:
             typeof config.testInterval === "number" ? config.testInterval : state.testInterval,

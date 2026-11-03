@@ -1,6 +1,8 @@
 "use client";
 
 import * as React from "react";
+import { SafeImage } from "@subboost/ui/components/ui/safe-image";
+import { splitGroupEmoji } from "@subboost/core/icons/appearance";
 import {
   ArrowRight,
   Box,
@@ -17,6 +19,7 @@ import type { ProxyGroupGroupType } from "@subboost/core/types/config";
 import { cn } from "@subboost/ui/lib/utils";
 
 export type VisualDisplayGroup = {
+  presentation?: { name: string; icon?: string };
   id: string;
   name: string;
   emoji: string;
@@ -336,9 +339,10 @@ export function ProxyGroupsPreview({
                 <Box className="h-3.5 w-3.5 text-fg-50" />
               )}
 
-              <span className="text-sm">{group.emoji}</span>
+              {group.presentation?.icon && <SafeImage src={group.presentation.icon} width={20} height={20} alt="" className="h-5 w-5 rounded-md" fallback={<Box className="h-4 w-4 text-fg-45" />} />}
+              <span className="text-sm">{group.presentation ? splitGroupEmoji(group.presentation.name).emoji : group.emoji}</span>
               <span className="text-xs font-medium flex-1 min-w-0 flex flex-wrap items-center gap-x-2">
-                <span className="truncate">{getDisplayName(group.name)}</span>
+                <span className="truncate">{group.presentation ? splitGroupEmoji(group.presentation.name).label : getDisplayName(group.name)}</span>
                 {isDialerGroup && (
                   <span className="text-[10px] text-warning-detail-fg">
                     中转节点: {relayNodes.length} · 落地节点:{" "}

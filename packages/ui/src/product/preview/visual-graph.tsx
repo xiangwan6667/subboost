@@ -1,6 +1,9 @@
 "use client";
 
 import * as React from "react";
+import { ensureUniqueProxyNames } from "@subboost/core/generator/proxy-names";
+import { isMihomoSupportedProxyNode } from "@subboost/core/mihomo/proxy-sanitizer";
+import { allocateGroupPresentations, BUILTIN_ICON_IDS } from "@subboost/core/icons/appearance";
 import { Network, Server } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 import { ProtocolBadge } from "@subboost/ui/components/ui/protocol-badge";
@@ -38,6 +41,7 @@ export function VisualGraph() {
     proxyGroupAdvanced,
     builtinRuleEdits,
     proxyGroupNameOverrides,
+    groupAppearance,
     proxyGroupOrder,
     testUrl,
     testInterval,
@@ -55,6 +59,7 @@ export function VisualGraph() {
       proxyGroupAdvanced: state.proxyGroupAdvanced ?? {},
       builtinRuleEdits: state.builtinRuleEdits ?? {},
       proxyGroupNameOverrides: state.proxyGroupNameOverrides ?? {},
+      groupAppearance: state.groupAppearance,
       proxyGroupOrder: state.proxyGroupOrder ?? [],
       testUrl: state.testUrl,
       testInterval: state.testInterval,
@@ -359,6 +364,11 @@ export function VisualGraph() {
     resolveModuleName,
   ]);
 
+  const groupPresentations = groupAppearance ? allocateGroupPresentations(displayGroups,groupAppearance,displayGroups.map(group => {
+    const moduleId = group.id.startsWith("module:") ? group.id.slice(7) : "";
+    return { key: group.id, name: group.name, defaultIconId: moduleId && !proxyGroupNameOverrides[moduleId]?.trim() ? BUILTIN_ICON_IDS[moduleId] : undefined };
+  }),ensureUniqueProxyNames(effectiveNodes.filter(isMihomoSupportedProxyNode)).map(n => n.name)) : undefined;
+
   const defaultProxyByGroupName = React.useMemo(() => {
     const map = new Map<string, string>();
     for (const g of generatedProxyGroups) {
@@ -467,7 +477,10 @@ export function VisualGraph() {
       </div>
 
       <ProxyGroupsPreview
-        displayGroups={displayGroups}
+        displayGroups={displayGroups.map(group => {
+          const p = groupPresentations?.get(group.name);
+          return p ? { ...group, presentation: p } : group;
+        })}
         expandedGroups={expandedGroups}
         draggingGroupId={draggingGroupId}
         dragOverGroup={dragOverGroup}

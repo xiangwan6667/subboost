@@ -1,3 +1,4 @@
+vi.mock("@subboost/ui/product/converter/advanced-mode/sections/group-appearance-settings", () => ({ GroupAppearanceSettings: () => null }));
 import * as React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";

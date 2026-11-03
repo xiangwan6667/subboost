@@ -1,6 +1,7 @@
 import * as React from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { newGroupAppearance } from "@subboost/core/icons/appearance";
 
 const mocks = vi.hoisted(() => ({
   captures: {} as Record<string, any>,
@@ -426,5 +427,14 @@ describe("VisualGraph", () => {
     const auto = mocks.captures.proxyGroupsPreview.displayGroups.find((group: any) => group.id === "module:auto");
 
     expect(auto.rules).toEqual([{ id: "sel", name: "Select Rule", behavior: "classical" }]);
+  });
+  it("uses the same group and node collision names as YAML output",()=>{
+    mocks.store.groupAppearance=newGroupAppearance();
+    mocks.store.dialerProxyGroups=[]; mocks.store.proxyGroupOrder=[];
+    mocks.store.nodes=[0,1].map(()=>({name:"Netflix",type:"ss",server:"example.com",port:443,cipher:"aes-128-gcm",password:"secret"}));
+    mocks.store.customProxyGroups=[{id:"a",name:"⚡ Netflix",emoji:"⚡",groupType:"select"},{id:"b",name:"🚀 Netflix",emoji:"🚀",groupType:"select"}];
+    mocks.generatedProxyGroups=mocks.store.customProxyGroups.map((g:any)=>({name:g.name,type:"select",proxies:[]}));
+    renderToStaticMarkup(React.createElement(VisualGraph));
+    expect(mocks.captures.proxyGroupsPreview.displayGroups.map((g:any)=>g.presentation.name)).toEqual(["Netflix (3)","Netflix (4)"]);
   });
 });

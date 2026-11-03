@@ -1,3 +1,4 @@
+import { newGroupAppearance, normalizeGroupAppearance, type GroupAppearance } from "@subboost/core/icons/appearance";
 import type { ParsedNode, ParseResult } from "@subboost/core/types/node";
 import type {
   BuiltinRuleEdits,
@@ -165,6 +166,7 @@ export async function fetchUrlContentInBrowser(
 }
 
 export interface ConfigState {
+  groupAppearance?: GroupAppearance;
   /** Changes when a new editor session replaces the current draft; never persisted. */
   draftRevision: number;
   // 节点相关
@@ -243,6 +245,7 @@ export interface ConfigState {
 }
 
 export interface ConfigActions {
+  setGroupAppearance: (settings: GroupAppearance) => void;
   // 订阅源操作
   setSources: (sources: SubscriptionSource[]) => void;
 
@@ -378,6 +381,7 @@ export const initialState: ConfigState = {
   builtinRuleEdits: {},
   customRules: [],
   dialerProxyGroups: [],
+  groupAppearance: newGroupAppearance(),
   proxyGroupNameOverrides: {},
   proxyGroupOrder: [],
   ruleOrder: [],

@@ -80,6 +80,7 @@ function buildGenerateClashYamlOptions(
     customProxyGroups: state.customProxyGroups,
     customRuleSets: state.customRuleSets,
     builtinRuleEdits: state.builtinRuleEdits,
+    groupAppearance: state.groupAppearance,
     proxyGroupAdvanced: state.proxyGroupAdvanced,
     proxyGroupNameOverrides: state.proxyGroupNameOverrides,
     proxyGroupOrder: state.proxyGroupOrder,

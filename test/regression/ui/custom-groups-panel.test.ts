@@ -1,3 +1,4 @@
+vi.mock("@subboost/ui/product/converter/advanced-mode/sections/group-appearance-settings", () => ({ GroupAppearanceSettings: () => null }));
 // @ts-expect-error public coverage tests render with the public React runtime.
 import * as React from "../../../node_modules/react";
 // @ts-expect-error public coverage tests render with the public ReactDOM server runtime.

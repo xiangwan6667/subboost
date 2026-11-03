@@ -389,6 +389,7 @@ export function useSubscriptionLink({
             customProxyGroups,
             customRuleSets,
             builtinRuleEdits,
+            groupAppearance: useConfigStore.getState().groupAppearance,
             proxyGroupAdvanced: useConfigStore.getState().proxyGroupAdvanced,
             proxyGroupAdvancedModeEnabled: Boolean(useConfigStore.getState().proxyGroupAdvancedModeEnabled),
             moduleRuleEditWarningAccepted,

@@ -1,3 +1,4 @@
+import { normalizeGroupAppearance } from "@subboost/core/icons/appearance";
 import type { ConfigState, SourceType, SubscriptionSource } from "./definitions";
 import { initialState } from "./definitions";
 import { safeParseJsonObject } from "@subboost/core/json";
@@ -135,6 +136,7 @@ function hasMeaningfulConfig(state: ConfigState): boolean {
     state.allowLan !== initialState.allowLan ||
     state.testUrl !== initialState.testUrl ||
     state.testInterval !== initialState.testInterval ||
+    JSON.stringify(state.groupAppearance) !== JSON.stringify(initialState.groupAppearance) ||
     state.sharedHealthChecks !== initialState.sharedHealthChecks ||
     state.ruleProviderBaseUrl !== initialState.ruleProviderBaseUrl ||
     state.cnIpNoResolve !== initialState.cnIpNoResolve ||
@@ -160,6 +162,7 @@ function buildHandoffState(state: ConfigState): Partial<ConfigState> {
     builtinRuleEdits: state.builtinRuleEdits,
     customRules: state.customRules,
     dialerProxyGroups: state.dialerProxyGroups,
+    groupAppearance: state.groupAppearance,
     proxyGroupNameOverrides: state.proxyGroupNameOverrides,
     proxyGroupOrder: state.proxyGroupOrder,
     ruleOrder: state.ruleOrder,
@@ -222,6 +225,7 @@ function normalizeHandoffState(raw: unknown): Partial<ConfigState> | null {
   if (customRules) out.customRules = customRules;
   const dialerProxyGroups = objectArray<ConfigState["dialerProxyGroups"][number]>(raw.dialerProxyGroups);
   if (dialerProxyGroups) out.dialerProxyGroups = dialerProxyGroups;
+  out.groupAppearance = normalizeGroupAppearance(raw.groupAppearance);
   if (isStringRecord(raw.proxyGroupNameOverrides)) out.proxyGroupNameOverrides = raw.proxyGroupNameOverrides;
   const proxyGroupOrder = stringArray(raw.proxyGroupOrder);
   if (proxyGroupOrder) out.proxyGroupOrder = proxyGroupOrder;
