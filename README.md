@@ -23,7 +23,8 @@
 - **Chained proxies**: Configure chained proxies and `relay proxy groups` visually in one click.
 - **Precise routing**: Enable more than 30 common proxy groups and over 2,000 remote rule sets.
 - **Rule management**: Reorder rules for deeper customization by advanced users.
-- **Group display**: Toggle emoji and icons independently. Search and select each group's icon, restore automatic matching, or hide its icon. Built-in groups have default icons; custom group names and descriptions are matched against Oasisic-Icons when possible.
+- **Group display**: Icons are on and emoji are off by default, with independent toggles. Search and select each group's icon, restore automatic matching, or hide its icon. Built-in groups have default icons; custom group names and descriptions are matched against Oasisic-Icons when possible.
+- **Editor list sorting**: Drag groups, use the arrow buttons, or enter a position within each category. Categories are numbered separately, and editor ordering is independent from the preview and generated configuration order.
 - **DNS leak prevention**: The default `basic and DNS configuration` helps prevent DNS leaks.
 - **Automatic refresh**: Refresh subscriptions on a schedule and intelligently match nodes during refresh.
 

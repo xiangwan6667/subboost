@@ -12,6 +12,7 @@ import { matchGroupIcon, resolveGroupIcon } from "@subboost/core/generator/group
 import { resolveProxyGroupTargetName } from "@subboost/core/proxy-group-targets";
 import { DEFAULT_LOAD_BALANCE_STRATEGY, type LoadBalanceStrategy, type ProxyGroupGroupType } from "@subboost/core/types/config";
 import { useConfigStore } from "@subboost/ui/store/config-store";
+import { sortProxyGroupsForEditor } from "@subboost/ui/store/config-store/proxy-group-editor-order";
 import { useProductInteractionAdapter } from "@subboost/ui/product/interactions";
 import {
   buildManualRuleTargets,
@@ -58,6 +59,8 @@ export function ProxyGroupsCustomGroupsPanel({
     showGroupEmoji,
     showGroupIcons,
     groupIconOverrides,
+    proxyGroupEditorOrder = {},
+    setProxyGroupEditorOrder,
     customProxyGroups = [],
     addCustomProxyGroup,
     removeCustomProxyGroup,
@@ -86,6 +89,10 @@ export function ProxyGroupsCustomGroupsPanel({
   // 注意：新增 useState 追加在末尾，保持既有测试的 setter 索引稳定
   const [settingsGroupId, setSettingsGroupId] = React.useState<string | null>(null);
   const interactions = useProductInteractionAdapter();
+  const sortedCustomGroups = React.useMemo(
+    () => sortProxyGroupsForEditor(customProxyGroups, proxyGroupEditorOrder.custom),
+    [customProxyGroups, proxyGroupEditorOrder.custom],
+  );
   const listenerConflictState = React.useMemo(
     () => ({ dnsYaml, mixedPort, listenerPorts, groupListeners }),
     [dnsYaml, mixedPort, listenerPorts, groupListeners]
@@ -255,7 +262,7 @@ export function ProxyGroupsCustomGroupsPanel({
         <div className="text-xs text-fg-40 py-3 text-center">暂无自定义分组</div>
       ) : (
         <div className="space-y-1">
-          {customProxyGroups.map((group) => {
+          {sortedCustomGroups.map((group) => {
             const isExpanded = expandedCustomGroups.has(group.id);
             const isEditing = editingCustomGroupId === group.id;
             const manualRules = listCustomRulesForTarget(customRules, group.name, {
@@ -428,6 +435,9 @@ export function ProxyGroupsCustomGroupsPanel({
                 showEmoji={showGroupEmoji !== false}
                 iconUrl={showGroupIcons === true ? resolveGroupIcon(groupIconOverrides, `custom:${group.id}`, matchGroupIcon(group.name, group.description)) : undefined}
                 iconPicker={<GroupIconPicker targetKey={`custom:${group.id}`} groupName={group.name} automaticIconUrl={matchGroupIcon(group.name, group.description)} />}
+                sorting={{ category: "custom", id: group.id, name: group.name,
+                  ids: sortedCustomGroups.map((item) => item.id),
+                  onChange: (order) => setProxyGroupEditorOrder("custom", order) }}
                 isCore={false}
                 isEnabled={group.enabled !== false}
                 onToggleEnabled={() => updateCustomProxyGroup(group.id, { enabled: group.enabled === false })}

@@ -184,6 +184,28 @@
     container-type: inline-size;
   }
 
+  .proxy-group-sortable-card {
+    container: proxy-group-card / inline-size;
+  }
+
+  .proxy-group-card-layout {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .proxy-group-card-actions {
+    grid-column-start: 2;
+  }
+
+  @container proxy-group-card (min-width: 42rem) {
+    .proxy-group-card-layout {
+      grid-template-columns: auto minmax(0, 1fr) auto;
+    }
+
+    .proxy-group-card-actions {
+      grid-column-start: auto;
+    }
+  }
+
   .proxy-group-rule-row {
     container-type: inline-size;
   }

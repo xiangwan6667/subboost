@@ -33,7 +33,8 @@ describe("createProxyGroupActions", () => {
   });
 
   it("normalizes proxy group display order", () => {
-    const { actions, getState } = createHarness();
+    const proxyGroupEditorOrder = { core: ["auto", "select"], custom: ["second", "first"] };
+    const { actions, getState } = createHarness({ proxyGroupEditorOrder });
 
     actions.setProxyGroupOrder([
       " module:ai ",
@@ -46,6 +47,7 @@ describe("createProxyGroupActions", () => {
     ]);
 
     expect(getState().proxyGroupOrder).toEqual(["module:ai", "name:External"]);
+    expect(getState().proxyGroupEditorOrder).toEqual(proxyGroupEditorOrder);
 
     actions.setProxyGroupOrder("bad" as never);
     expect(getState().proxyGroupOrder).toEqual([]);

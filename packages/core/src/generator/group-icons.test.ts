@@ -6,6 +6,17 @@ import { buildGenerateOptionsFromConfig } from "../subscription/config-utils";
 import { stripLeadingGroupEmoji } from "../proxy-group-name";
 
 describe("manual group icons", () => {
+  it.each(["台湾", "台湾节点", "台灣節點", "臺灣家寬", "Taiwan Nodes", "🇹🇼 台湾节点"])(
+    "matches the Taiwan icon for %s", (name) => {
+      expect(matchGroupIcon(name)).toBe(getGroupIconUrl("CN-Taiwan"));
+    },
+  );
+
+  it("finds Taiwan by Chinese alias in the manual picker and in group descriptions", () => {
+    expect(searchGroupIcons("台湾").map((icon) => icon.id)).toContain("CN-Taiwan");
+    expect(matchGroupIcon("自定义分组", "台湾家宽")).toBe(getGroupIconUrl("CN-Taiwan"));
+  });
+
   it("searches the existing catalog with Chinese aliases and normalized brand names", () => {
     expect(searchGroupIcons("币安").map((icon) => icon.id)).toEqual(["Binance"]);
     expect(searchGroupIcons("谷歌学术").map((icon) => icon.id)).toEqual(["GoogleScholar"]);

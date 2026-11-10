@@ -31,6 +31,7 @@ import {
   ProxyGroupNameEditor,
 } from "./proxy-group-name-editor";
 import { ProxyGroupSummary } from "./proxy-group-summary";
+import { ProxyGroupDragHandle, ProxyGroupSortControls, SortableProxyGroupCard, type ProxyGroupSorting } from "./proxy-group-sort";
 import {
   getLoadBalanceStrategyLabel,
   getProxyGroupTypeLabel,
@@ -87,6 +88,7 @@ export function ProxyGroupsModuleCard({
   showEmoji = true,
   iconUrl,
   iconPicker,
+  sorting,
   isCore,
   isEnabled,
   onToggleEnabled,
@@ -141,6 +143,7 @@ export function ProxyGroupsModuleCard({
   showEmoji?: boolean;
   iconUrl?: string;
   iconPicker?: React.ReactNode;
+  sorting?: ProxyGroupSorting;
   isCore: boolean;
   isEnabled: boolean;
   onToggleEnabled: () => void;
@@ -243,10 +246,10 @@ export function ProxyGroupsModuleCard({
   ) : null;
 
   return (
-    <div className="overflow-hidden rounded border border-ink/10 bg-ink/5">
+    <SortableProxyGroupCard sorting={isEditing ? undefined : sorting} className="proxy-group-sortable-card overflow-hidden rounded border border-ink/10 bg-ink/5">
       <div
         className={cn(
-          "relative grid grid-cols-[auto_minmax(0,1fr)] sm:grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-2 gap-y-1 px-2 py-2",
+          "proxy-group-card-layout relative grid items-center gap-x-2 gap-y-1 px-2 py-2",
           hasExpandedContent && !isEditing && "cursor-pointer"
         )}
       >
@@ -260,15 +263,20 @@ export function ProxyGroupsModuleCard({
             title={isRulesExpanded ? "收起" : "展开"}
           />
         )}
-        {!isEditing && (hasExpandedContent ? (
-          isRulesExpanded ? (
-            <ChevronDown className="pointer-events-none relative z-10 h-4 w-4 shrink-0 text-fg-50" aria-hidden="true" />
-          ) : (
-            <ChevronRight className="pointer-events-none relative z-10 h-4 w-4 shrink-0 text-fg-50" aria-hidden="true" />
-          )
-        ) : (
-          <span className="h-4 w-4 shrink-0" />
-        ))}
+        {!isEditing && (
+          <div className="pointer-events-none relative z-10 flex shrink-0 items-center gap-1">
+            {sorting && <ProxyGroupDragHandle sorting={sorting} />}
+            {hasExpandedContent ? (
+              isRulesExpanded ? (
+                <ChevronDown className="pointer-events-none relative z-10 h-4 w-4 shrink-0 text-fg-50" aria-hidden="true" />
+              ) : (
+                <ChevronRight className="pointer-events-none relative z-10 h-4 w-4 shrink-0 text-fg-50" aria-hidden="true" />
+              )
+            ) : (
+              <span className="h-4 w-4 shrink-0" />
+            )}
+          </div>
+        )}
         <div
           className={cn(
             "min-w-0",
@@ -358,6 +366,7 @@ export function ProxyGroupsModuleCard({
                       <Pencil className="h-3.5 w-3.5" />
                     </Button>
                   )}
+                  {iconPicker}
                   {showGeminiScholarHint && <ModuleHintPopover moduleId={module.id} />}
                 </div>
               </div>
@@ -371,8 +380,8 @@ export function ProxyGroupsModuleCard({
         </div>
 
         {!isEditing && (
-          <div className="pointer-events-none relative z-10 col-start-2 sm:col-start-auto flex shrink-0 items-center justify-end gap-2">
-            {iconPicker}
+          <div className="proxy-group-card-actions pointer-events-none relative z-10 flex shrink-0 items-center justify-end gap-2">
+            {sorting && <ProxyGroupSortControls sorting={sorting} />}
             <Switch
               aria-label={`启用 ${displayName} 分流组`}
               checked={isEnabled}
@@ -422,6 +431,6 @@ export function ProxyGroupsModuleCard({
         (advancedMode && renderAdvancedContent
           ? renderAdvancedContent(rulesContent, totalRules)
           : rulesContent)}
-    </div>
+    </SortableProxyGroupCard>
   );
 }

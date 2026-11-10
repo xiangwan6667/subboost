@@ -204,6 +204,9 @@ export interface ConfigState {
   // Key 格式：module:<id> / custom:<id> / dialer:<id>
   proxyGroupOrder: string[];
 
+  // 左侧编辑列表按分类保存的本地顺序，与右侧预览及配置输出顺序独立。
+  proxyGroupEditorOrder: Record<string, string[]>;
+
   // 用户可编辑规则窗口顺序
   // Key 格式：custom-rule:<id> / custom-rule-set:<id> / module:<moduleId>:<ruleId> / special:<id>
   ruleOrder: string[];
@@ -282,6 +285,7 @@ export interface ConfigActions {
 
   // 代理组顺序
   setProxyGroupOrder: (order: string[]) => void;
+  setProxyGroupEditorOrder: (category: string, order: string[]) => void;
 
   // 分流组高级配置
   updateProxyGroupAdvanced: (moduleId: string, patch: Partial<ProxyGroupAdvancedConfig>) => void;
@@ -386,6 +390,7 @@ export const initialState: ConfigState = {
   dialerProxyGroups: [],
   proxyGroupNameOverrides: {},
   proxyGroupOrder: [],
+  proxyGroupEditorOrder: {},
   ruleOrder: [],
   moduleRuleEditWarningAccepted: false,
   appliedTemplateId: getBuiltinTemplateId("minimal"),
@@ -395,8 +400,8 @@ export const initialState: ConfigState = {
   testUrl: DEFAULT_SUBBOOST_CONFIG.testUrl,
   testInterval: DEFAULT_SUBBOOST_CONFIG.testInterval,
   sharedHealthChecks: DEFAULT_SUBBOOST_CONFIG.sharedHealthChecks,
-  showGroupEmoji: true,
-  showGroupIcons: false,
+  showGroupEmoji: false,
+  showGroupIcons: true,
   groupIconOverrides: {},
   ruleProviderBaseUrl: DEFAULT_SUBBOOST_CONFIG.ruleProviderBaseUrl,
   cnIpNoResolve: DEFAULT_SUBBOOST_CONFIG.cnIpNoResolve,

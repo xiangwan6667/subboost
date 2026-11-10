@@ -1,4 +1,5 @@
 import { normalizeGroupIconOverrides } from "@subboost/core/generator/group-icons";
+import { normalizeProxyGroupEditorOrder } from "../proxy-group-editor-order";
 import type { ConfigActions } from "../definitions";
 import { parseNodeNameFilterConfig } from "@subboost/core/subscription/node-name-filter";
 import type { GetState, SetAndGenerateConfig, SetState } from "../store-types";
@@ -14,6 +15,7 @@ type SettingsActions = Pick<
   | "setShowGroupEmoji"
   | "setShowGroupIcons"
   | "setGroupIconOverride"
+  | "setProxyGroupEditorOrder"
   | "setRuleProviderBaseUrl"
   | "setNodeNameFilter"
   | "setProxyGroupAdvancedModeEnabled"
@@ -22,11 +24,19 @@ type SettingsActions = Pick<
 >;
 
 export function createSettingsActions(
-  _set: SetState,
+  set: SetState,
   _get: GetState,
   setAndGenerateConfig: SetAndGenerateConfig
 ): SettingsActions {
   return {
+    setProxyGroupEditorOrder: (category, order) => {
+      const normalized = normalizeProxyGroupEditorOrder({ [category]: order });
+      if (!Object.hasOwn(normalized, category)) return;
+      set((state) => ({
+        proxyGroupEditorOrder: { ...state.proxyGroupEditorOrder, [category]: normalized[category] },
+      }));
+    },
+
     setDnsYaml: (yaml: string) => {
       setAndGenerateConfig(() => ({ dnsYaml: yaml }));
     },

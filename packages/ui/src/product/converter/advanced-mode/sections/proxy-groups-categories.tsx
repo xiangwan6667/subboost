@@ -29,6 +29,7 @@ import { getBuiltinGroupIcon, resolveGroupIcon } from "@subboost/core/generator/
 import { resolveProxyGroupTargetName } from "@subboost/core/proxy-group-targets";
 import { resolveNodeNameFilter } from "@subboost/core/subscription/node-name-filter";
 import { useConfigStore, type RuleSetDraft } from "@subboost/ui/store/config-store";
+import { sortProxyGroupsForEditor } from "@subboost/ui/store/config-store/proxy-group-editor-order";
 import {
   buildManualRuleTargets,
   listCustomRulesForTarget,
@@ -83,6 +84,8 @@ export function ProxyGroupsCategories() {
     showGroupEmoji,
     showGroupIcons,
     groupIconOverrides,
+    proxyGroupEditorOrder = {},
+    setProxyGroupEditorOrder,
     setShowGroupEmoji,
     setShowGroupIcons,
     updateProxyGroupAdvanced,
@@ -181,8 +184,10 @@ export function ProxyGroupsCategories() {
       if (!grouped[proxyMod.category]) grouped[proxyMod.category] = [];
       grouped[proxyMod.category].push(proxyMod);
     }
-    return grouped;
-  }, [hiddenProxyGroups]);
+    return Object.fromEntries(Object.entries(grouped).map(([category, modules]) => [
+      category, sortProxyGroupsForEditor(modules, proxyGroupEditorOrder[category]),
+    ]));
+  }, [hiddenProxyGroups, proxyGroupEditorOrder]);
   const generatedProxyGroupNodeCounts = React.useMemo(() => {
     if (effectiveNodes.length === 0) return new Map<string, number>();
     const generated = generateProxyGroups({
@@ -567,6 +572,9 @@ export function ProxyGroupsCategories() {
                               showEmoji={showGroupEmoji !== false}
                               iconUrl={showGroupIcons === true ? resolveGroupIcon(groupIconOverrides, `module:${module.id}`, getBuiltinGroupIcon(module.id)) : undefined}
                               iconPicker={<GroupIconPicker targetKey={`module:${module.id}`} groupName={display.full} automaticIconUrl={getBuiltinGroupIcon(module.id)} />}
+                              sorting={{ category: categoryId, id: module.id, name: display.full,
+                                ids: modules.map((item) => item.id),
+                                onChange: (order) => setProxyGroupEditorOrder(categoryId, order) }}
                               isCore={isCore}
                               isEnabled={isEnabled}
                               onToggleEnabled={handleToggleEnabled}

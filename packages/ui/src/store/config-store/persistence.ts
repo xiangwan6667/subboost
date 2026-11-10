@@ -1,4 +1,5 @@
 import { normalizeGroupIconOverrides } from "@subboost/core/generator/group-icons";
+import { normalizeProxyGroupEditorOrder } from "./proxy-group-editor-order";
 import type { ConfigState } from "./definitions";
 import { safeParseJsonObject } from "@subboost/core/json";
 import { normalizeNodeNameFilterConfig } from "@subboost/core/subscription/node-name-filter";
@@ -90,9 +91,10 @@ export function normalizePersistedConfigState(
     ...(typeof state.testUrl === "string" ? { testUrl: state.testUrl } : {}),
     ...(typeof state.testInterval === "number" ? { testInterval: state.testInterval } : {}),
     sharedHealthChecks: state.sharedHealthChecks === true,
-    showGroupEmoji: state.showGroupEmoji !== false,
-    showGroupIcons: state.showGroupIcons === true,
+    showGroupEmoji: state.showGroupEmoji === true,
+    showGroupIcons: state.showGroupIcons !== false,
     groupIconOverrides: normalizeGroupIconOverrides(state.groupIconOverrides),
+    proxyGroupEditorOrder: normalizeProxyGroupEditorOrder(state.proxyGroupEditorOrder),
     ...(typeof state.ruleProviderBaseUrl === "string" ? { ruleProviderBaseUrl: state.ruleProviderBaseUrl } : {}),
     ...(typeof state.proxyGroupAdvancedModeEnabled === "boolean"
       ? { proxyGroupAdvancedModeEnabled: state.proxyGroupAdvancedModeEnabled }
@@ -118,6 +120,7 @@ export function partializeConfigState(state: ConfigState): Partial<ConfigState> 
     showGroupEmoji: state.showGroupEmoji,
     showGroupIcons: state.showGroupIcons,
     groupIconOverrides: normalizeGroupIconOverrides(state.groupIconOverrides),
+    proxyGroupEditorOrder: normalizeProxyGroupEditorOrder(state.proxyGroupEditorOrder),
     ruleProviderBaseUrl: state.ruleProviderBaseUrl,
     proxyGroupAdvancedModeEnabled: state.proxyGroupAdvancedModeEnabled,
     nodeNameFilter: normalizeNodeNameFilterConfig(state.nodeNameFilter),

@@ -251,6 +251,20 @@ describe("ProxyGroupsCategories", () => {
     };
   });
 
+  it("sorts each editor category independently from the preview and numbers from one", () => {
+    mocks.store.hiddenProxyGroups = [];
+    mocks.store.proxyGroupEditorOrder = { core: ["fallback", "auto"] };
+    mocks.store.proxyGroupOrder = ["module:cn", "module:auto", "module:fallback"];
+    mocks.store.setProxyGroupEditorOrder = vi.fn();
+    renderCategories({ 0: new Set(["core", "service"]) });
+    expect(mocks.captures.moduleCards.map((card: { module: { id: string } }) => card.module.id)).toEqual(["fallback", "auto", "cn"]);
+    expect(mocks.captures.moduleCards[0].sorting.ids).toEqual(["fallback", "auto"]);
+    expect(mocks.captures.moduleCards[2].sorting.ids).toEqual(["cn"]);
+    mocks.captures.moduleCards[0].sorting.onChange(["auto", "fallback"]);
+    expect(mocks.store.setProxyGroupEditorOrder).toHaveBeenCalledWith("core", ["auto", "fallback"]);
+    expect(mocks.store.proxyGroupOrder).toEqual(["module:cn", "module:auto", "module:fallback"]);
+  });
+
   it("opens only the custom category by default when custom groups exist", () => {
     renderCategories();
 

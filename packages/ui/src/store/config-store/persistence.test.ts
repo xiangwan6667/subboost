@@ -10,6 +10,24 @@ import {
 } from "./persistence";
 
 describe("config store persistence", () => {
+  it("defaults to icons on and emoji off while preserving explicitly saved choices", () => {
+    expect(initialState).toMatchObject({ showGroupEmoji: false, showGroupIcons: true });
+    expect(normalizePersistedConfigState({})).toMatchObject({ showGroupEmoji: false, showGroupIcons: true });
+    expect(normalizePersistedConfigState({ showGroupEmoji: true, showGroupIcons: false }))
+      .toMatchObject({ showGroupEmoji: true, showGroupIcons: false });
+  });
+
+  it("persists category-local editor order without saving or deriving the preview order", () => {
+    const saved = partializeConfigState({ ...initialState,
+      proxyGroupEditorOrder: { core: ["auto", "select"], custom: ["second", "first"] },
+      proxyGroupOrder: ["module:select", "custom:first", "custom:second"],
+    });
+    expect(saved).not.toHaveProperty("proxyGroupOrder");
+    expect(normalizePersistedConfigState(saved).proxyGroupEditorOrder).toEqual({
+      core: ["auto", "select"], custom: ["second", "first"],
+    });
+  });
+
   it("restores manual icon selections and drops invalid imported catalog entries", () => {
     const saved = partializeConfigState({ ...initialState, groupIconOverrides: {
       "module:select": "Google", "custom:one": "", "module:missing": "Amazon", "custom:bad": "invalid",

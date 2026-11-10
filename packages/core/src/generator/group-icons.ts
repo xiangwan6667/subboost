@@ -93,6 +93,7 @@ const aliases: Record<string, readonly string[]> = {
   Facebook: ["脸书"],
   Netflix: ["奈飞", "网飞"],
   Discord: ["迪斯科德"],
+  "CN-Taiwan": ["台湾", "台灣", "臺灣", "Taiwan"],
 };
 
 function termsFor(icon: IconEntry): readonly string[] {

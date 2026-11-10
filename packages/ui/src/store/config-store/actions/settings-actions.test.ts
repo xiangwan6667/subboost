@@ -16,6 +16,26 @@ function createStore(initial: Record<string, unknown> = {}) {
 }
 
 describe("config store settings actions", () => {
+  it("changes only a category's editor order without regenerating YAML or changing preview order", () => {
+    const customProxyGroups = [{ id: "first", name: "First" }, { id: "second", name: "Second" }];
+    const initial = {
+      proxyGroupEditorOrder: { core: ["auto", "select"] },
+      proxyGroupOrder: ["custom:first", "module:select", "custom:second"],
+      customProxyGroups, ruleOrder: ["rule-one"], generatedYaml: "unchanged",
+    };
+    const store = createStore(initial);
+    const actions = createSettingsActions(store.set as unknown as SetState, store.get as unknown as GetState,
+      store.setAndGenerateConfig as unknown as SetAndGenerateConfig);
+    actions.setProxyGroupEditorOrder("custom", ["second", "first", "second"]);
+    actions.setProxyGroupEditorOrder("service", ["google", "youtube", "auto"]);
+    actions.setProxyGroupEditorOrder("invalid", ["select"]);
+    expect(store.state()).toEqual({ ...initial, proxyGroupEditorOrder: {
+      core: ["auto", "select"], custom: ["second", "first"], service: ["google", "youtube"],
+    } });
+    expect(store.state().customProxyGroups).toBe(customProxyGroups);
+    expect(store.setAndGenerateConfig).not.toHaveBeenCalled();
+  });
+
   it("saves, disables and resets manual icons independently from both display switches", () => {
     const store = createStore({ showGroupEmoji: false, showGroupIcons: false, groupIconOverrides: {} });
     const actions = createSettingsActions(store.set as unknown as SetState, store.get as unknown as GetState,
