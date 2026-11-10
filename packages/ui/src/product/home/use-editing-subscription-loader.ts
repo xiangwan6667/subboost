@@ -1,5 +1,6 @@
 "use client";
 
+import { normalizeGroupIconOverrides } from "@subboost/core/generator/group-icons";
 import * as React from "react";
 import type { SubscriptionSource } from "@subboost/ui/store/config-store";
 import type { ParsedNode } from "@subboost/core/types/node";
@@ -550,6 +551,9 @@ export function useEditingSubscriptionLoader({
           testUrl: typeof cfg.testUrl === "string" ? (cfg.testUrl as string) : state.testUrl,
           testInterval: typeof cfg.testInterval === "number" ? (cfg.testInterval as number) : state.testInterval,
           sharedHealthChecks: cfg.sharedHealthChecks === true,
+          showGroupEmoji: cfg.showGroupEmoji !== false,
+          showGroupIcons: cfg.showGroupIcons === true,
+          groupIconOverrides: normalizeGroupIconOverrides(cfg.groupIconOverrides),
           cnIpNoResolve: typeof (cfg as any).cnIpNoResolve === "boolean" ? Boolean((cfg as any).cnIpNoResolve) : state.cnIpNoResolve,
           experimentalCnUseCnRuleSet:
             typeof (cfg as any).experimentalCnUseCnRuleSet === "boolean"

@@ -5,6 +5,8 @@ import { Check, ChevronDown, ChevronRight, HelpCircle, Pencil, SlidersHorizontal
 import { Button } from "@subboost/ui/components/ui/button";
 import { IconButton } from "@subboost/ui/components/ui/icon-button";
 import { Input } from "@subboost/ui/components/ui/input";
+import { SafeImage } from "@subboost/ui/components/ui/safe-image";
+import { stripLeadingGroupEmoji } from "@subboost/core/proxy-group-name";
 import {
   HelpPopover,
 } from "@subboost/ui/components/ui/popover";
@@ -82,6 +84,9 @@ function ModuleHintPopover({ moduleId }: { moduleId: string }) {
 export function ProxyGroupsModuleCard({
   module,
   display,
+  showEmoji = true,
+  iconUrl,
+  iconPicker,
   isCore,
   isEnabled,
   onToggleEnabled,
@@ -133,6 +138,9 @@ export function ProxyGroupsModuleCard({
 }: {
   module: ProxyGroupModule;
   display: { full: string };
+  showEmoji?: boolean;
+  iconUrl?: string;
+  iconPicker?: React.ReactNode;
   isCore: boolean;
   isEnabled: boolean;
   onToggleEnabled: () => void;
@@ -182,6 +190,7 @@ export function ProxyGroupsModuleCard({
   nodeCount?: number;
   renderAdvancedContent?: (rulesContent: React.ReactNode, rulesCount: number) => React.ReactNode;
 }) {
+  const displayName = showEmoji ? display.full : stripLeadingGroupEmoji(display.full);
   const effectiveRules = getEffectiveModuleRuleItems(module, ruleSetsByTarget, hiddenPresetRuleIds);
   const excludedRuleIds = getExcludedModuleRuleIds(module.id, hiddenPresetRuleIds);
   const excludedRules = module.rules.filter((rule) => rule?.id && excludedRuleIds.has(rule.id));
@@ -245,7 +254,7 @@ export function ProxyGroupsModuleCard({
           <button
             type="button"
             className="absolute inset-0 z-0 cursor-pointer rounded-none transition-colors hover:bg-ink/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-focus-ring-inset"
-            aria-label={isRulesExpanded ? `收起 ${display.full}` : `展开 ${display.full}`}
+            aria-label={isRulesExpanded ? `收起 ${displayName}` : `展开 ${displayName}`}
             aria-expanded={isRulesExpanded}
             onClick={onToggleRulesExpanded}
             title={isRulesExpanded ? "收起" : "展开"}
@@ -327,8 +336,12 @@ export function ProxyGroupsModuleCard({
           ) : (
             <div className="proxy-group-module-header flex min-w-0 w-full flex-wrap items-center justify-between gap-x-2 gap-y-1">
               <div className="flex min-w-0 max-w-full items-center gap-2">
+                {iconUrl && (
+                  <SafeImage src={iconUrl} fallback={null} alt="" referrerPolicy="no-referrer"
+                    className="h-8 w-8 shrink-0 rounded-md object-contain" />
+                )}
                 <span className="min-w-0 break-words text-sm font-medium text-fg">
-                  {display.full}
+                  {displayName}
                 </span>
                 <div className="flex shrink-0 items-center gap-1">
                   {!isCore && (
@@ -359,8 +372,9 @@ export function ProxyGroupsModuleCard({
 
         {!isEditing && (
           <div className="pointer-events-none relative z-10 col-start-2 sm:col-start-auto flex shrink-0 items-center justify-end gap-2">
+            {iconPicker}
             <Switch
-              aria-label={`启用 ${display.full} 分流组`}
+              aria-label={`启用 ${displayName} 分流组`}
               checked={isEnabled}
               onCheckedChange={onToggleEnabled}
               className="pointer-events-auto"
@@ -373,7 +387,7 @@ export function ProxyGroupsModuleCard({
                 size="sm"
                 className="pointer-events-auto relative h-7 shrink-0 px-2 text-fg-35 hover:text-indigo-200"
                 title={`高级设置（类型：${typeLabel}）`}
-                aria-label={`打开 ${display.full} 高级设置`}
+                aria-label={`打开 ${displayName} 高级设置`}
                 onClick={(e) => {
                   e.stopPropagation();
                   onOpenAdvancedSettings();

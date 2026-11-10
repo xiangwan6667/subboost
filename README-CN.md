@@ -23,8 +23,19 @@
 - **链式代理**：一键可视化配置链式代理和 `中转代理组`。
 - **精确分流**：内置 30 多个常用代理组和 2000 多条远程规则集供启用。
 - **规则管理**：可修改规则顺序，供高级用户深度自定义。
+- **分组显示**：表情和图标可分别开关；支持搜索并手动指定各组图标、恢复自动匹配或单独隐藏。内置分组使用默认图标，自定义分组可按名称或描述匹配 Oasisic-Icons，无法识别时不显示图标。
 - **防 DNS 泄露**：默认的 `基础和 DNS 配置` 可防止 DNS 泄露。
 - **自动刷新**：定时自动刷新订阅，刷新时可智能匹配节点。
+
+## Miu 订阅
+
+可导入包含 `type: miu` 的 Mihomo YAML、Base64 编码的 YAML，以及 SubBoost 扩展格式的 `miu://` 节点链接。链接格式例如：
+
+```text
+miu://<URL编码的PSK>@example.com:443?sni=example.com&udp=1#Miu
+```
+
+可选参数包括 `security=tls` 或 `security=reality`、`pbk`、`sid`、`fp`、`alpn`、`skip-cert-verify`、`idle-session-timeout` 和 `min-idle-session`。`miu://` 是 SubBoost 提供的兼容格式，不是 Miu 官方定义的分享链接格式。生成的 Miu 节点需要使用支持 Miu 的 Mihomo 内核；普通 Mihomo 内核不能直接使用此类型。
 
 ## 界面展示
 

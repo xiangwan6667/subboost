@@ -23,7 +23,8 @@ function buildParseResult(nodes: ParseResult["nodes"], errors: string[]): ParseR
 
 export function formatParseSegmentError(segment: string, error: unknown): string {
   const reason = error instanceof Error ? error.message : "未知错误";
-  return `解析失败: ${segment.substring(0, 50)}... - ${reason}`;
+  const preview = /miu:\/\//i.test(segment) ? "包含 Miu 链接（已隐藏）" : `${segment.substring(0, 50)}...`;
+  return `解析失败: ${preview} - ${reason}`;
 }
 
 export function splitNodeLinkSegments(content: string): string[] {

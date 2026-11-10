@@ -12,6 +12,7 @@ const PROXY_FIELD_ORDER_PROTOCOL: Partial<Record<KnownNodeType, string[]>> = {
   vless: ["uuid", "encryption", "packet-encoding"],
   trojan: ["password"],
   anytls: ["password"],
+  miu: ["psk", "idle-session-timeout", "min-idle-session"],
   hysteria: ["protocol", "auth-str", "obfs", "ports", "up", "down"],
   hysteria2: ["password", "obfs", "obfs-password", "up", "down", "ports", "hop-interval", "fingerprint", "alpn"],
   socks5: ["username", "password"],
@@ -175,7 +176,9 @@ function escapeYamlDoubleQuotedString(value: string): string {
     .replace(/"/g, '\\"')
     .replace(/\r/g, "\\r")
     .replace(/\n/g, "\\n")
-    .replace(/\t/g, "\\t");
+    .replace(/\t/g, "\\t")
+    .replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f-\u009f]/g, (char) => `\\x${char.charCodeAt(0).toString(16).padStart(2, "0")}`)
+    .replace(/\ufeff/g, "\\uFEFF");
 }
 
 /**
@@ -190,7 +193,7 @@ function toInlineYaml(value: unknown): string {
       if (s === "") return true;
       // 需要引号的情况：包含特殊字符或空格
       // 注意：在 flow style（{...} / [...]）里，`?` 等字符会触发更严格的 YAML 解析器报错（例如 PyYAML / 部分 Clash 客户端）。
-      if (/[+":,\[\]{}#&*!|>'%@`?\n]/.test(s) || s.includes(" ")) return true;
+      if (/[+":,\[\]{}#&*!|>'%@`?\u0000-\u001f\u007f-\u009f\ufeff]/.test(s) || s.includes(" ")) return true;
 
       // YAML 的“易被误判为标量类型”的字符串（布尔/空值/数字）
       // 例如：short-id: 7250（若不加引号，Clash 侧 YAML 解析可能会当成数字）
@@ -229,7 +232,7 @@ function toInlineYaml(value: unknown): string {
       .filter(([, v]) => v !== undefined)
       .map(([k, v]) => {
         // 统一为 name 字段加双引号：避免不同节点名的输出格式不一致（也降低下游 YAML 解析器差异风险）
-        if (k === "name" && typeof v === "string") {
+        if ((k === "name" || k === "psk" || k === "short-id") && typeof v === "string") {
           return `${k}: "${escapeYamlDoubleQuotedString(v)}"`;
         }
         return `${k}: ${toInlineYaml(v)}`;
@@ -244,7 +247,7 @@ function toBlockSequenceScalar(value: string): string {
   const ambiguous =
     !value ||
     trimmed !== value ||
-    /[\r\n#]/.test(value) ||
+    /[\u0000-\u001f\u007f-\u009f\ufeff#]/.test(value) ||
     /:\s/.test(value) ||
     /^[\-?:,\[\]{}&*!|>'"%@`]/.test(value) ||
     /^(?:null|~|true|false|yes|no|on|off)$/i.test(value) ||

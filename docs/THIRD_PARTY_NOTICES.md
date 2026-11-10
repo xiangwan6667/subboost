@@ -25,6 +25,15 @@ links to external ecosystem resources.
 
 - Mihomo core: https://github.com/MetaCubeX/mihomo
 - MetaCubeX rule data: https://github.com/MetaCubeX/meta-rules-dat
+- Oasisic-Icons brand catalog and linked icons: https://github.com/Hawaiine/Oasisic-Icons
+  (MIT; see [OASISIC_ICONS_LICENSE.txt](OASISIC_ICONS_LICENSE.txt)).
+  Maintained icon revisions are linked from
+  https://github.com/xiangwan6667/Oasisic-Icons. Google Scholar and Amazon use
+  white backgrounds; Binance retains its global app's black background and
+  yellow mark. Brand trademarks remain the property of their respective owners.
+  Google Scholar's source is the redraw at
+  https://commons.wikimedia.org/wiki/File:Google_Scholar_logo.svg; Binance's
+  source is the app icon at https://play.google.com/store/apps/details?id=com.binance.dev.
 
 The public source includes rule catalog identifiers and URLs for discovery and
 configuration. It does not vendor the complete upstream rule dataset.

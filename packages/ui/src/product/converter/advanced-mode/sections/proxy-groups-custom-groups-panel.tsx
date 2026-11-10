@@ -8,6 +8,7 @@ import { Input } from "@subboost/ui/components/ui/input";
 import { toast } from "@subboost/ui/components/ui/toaster";
 import { PROXY_GROUP_MODULES, type ProxyGroupModule } from "@subboost/core/generator/proxy-groups";
 import { resolveProxyGroupModuleName } from "@subboost/core/proxy-group-name";
+import { matchGroupIcon, resolveGroupIcon } from "@subboost/core/generator/group-icons";
 import { resolveProxyGroupTargetName } from "@subboost/core/proxy-group-targets";
 import { DEFAULT_LOAD_BALANCE_STRATEGY, type LoadBalanceStrategy, type ProxyGroupGroupType } from "@subboost/core/types/config";
 import { useConfigStore } from "@subboost/ui/store/config-store";
@@ -34,6 +35,7 @@ import {
   toProxyGroupNameDraft,
   type ProxyGroupNameDraft,
 } from "./proxy-group-name-editor";
+import { GroupIconPicker } from "./group-icon-picker";
 import { ProxyGroupsModuleCard } from "./proxy-groups-module-card";
 import { GroupAdvancedSettingsDialog } from "./group-advanced-settings-dialog";
 import { findGroupListenerBinding } from "./group-listener-settings";
@@ -53,6 +55,9 @@ export function ProxyGroupsCustomGroupsPanel({
     customRuleSets = [],
     builtinRuleEdits = {},
     cnIpNoResolve,
+    showGroupEmoji,
+    showGroupIcons,
+    groupIconOverrides,
     customProxyGroups = [],
     addCustomProxyGroup,
     removeCustomProxyGroup,
@@ -420,6 +425,9 @@ export function ProxyGroupsCustomGroupsPanel({
                 key={group.id}
                 module={cardModule}
                 display={{ full: group.name }}
+                showEmoji={showGroupEmoji !== false}
+                iconUrl={showGroupIcons === true ? resolveGroupIcon(groupIconOverrides, `custom:${group.id}`, matchGroupIcon(group.name, group.description)) : undefined}
+                iconPicker={<GroupIconPicker targetKey={`custom:${group.id}`} groupName={group.name} automaticIconUrl={matchGroupIcon(group.name, group.description)} />}
                 isCore={false}
                 isEnabled={group.enabled !== false}
                 onToggleEnabled={() => updateCustomProxyGroup(group.id, { enabled: group.enabled === false })}

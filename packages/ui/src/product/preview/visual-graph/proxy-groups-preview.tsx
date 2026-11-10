@@ -14,12 +14,15 @@ import {
   Zap,
 } from "lucide-react";
 import type { ProxyGroupGroupType } from "@subboost/core/types/config";
+import { stripLeadingGroupEmoji } from "@subboost/core/proxy-group-name";
+import { SafeImage } from "@subboost/ui/components/ui/safe-image";
 import { cn } from "@subboost/ui/lib/utils";
 
 export type VisualDisplayGroup = {
   id: string;
   name: string;
   emoji: string;
+  iconUrl?: string;
   groupType: string;
   strategy?: string;
   category: string;
@@ -37,7 +40,7 @@ type DragOverGroup = {
 } | null;
 
 function getDisplayName(name: string) {
-  return name.replace(/^\S+\s+/, "");
+  return stripLeadingGroupEmoji(name);
 }
 
 function formatDefaultProxy(proxyName: string) {
@@ -126,6 +129,8 @@ function getGroupColor(category: string) {
 
 export function ProxyGroupsPreview({
   displayGroups,
+  showEmoji = true,
+  showIcons = false,
   expandedGroups,
   draggingGroupId,
   dragOverGroup,
@@ -137,6 +142,8 @@ export function ProxyGroupsPreview({
   onSetProxyGroupOrder,
 }: {
   displayGroups: VisualDisplayGroup[];
+  showEmoji?: boolean;
+  showIcons?: boolean;
   expandedGroups: Set<string>;
   draggingGroupId: string | null;
   dragOverGroup: DragOverGroup;
@@ -336,7 +343,11 @@ export function ProxyGroupsPreview({
                 <Box className="h-3.5 w-3.5 text-fg-50" />
               )}
 
-              <span className="text-sm">{group.emoji}</span>
+              {showIcons && group.iconUrl && (
+                <SafeImage src={group.iconUrl} fallback={null} alt="" referrerPolicy="no-referrer"
+                  className="h-6 w-6 shrink-0 rounded object-contain" />
+              )}
+              {showEmoji && <span className="text-sm">{group.emoji}</span>}
               <span className="text-xs font-medium flex-1 min-w-0 flex flex-wrap items-center gap-x-2">
                 <span className="truncate">{getDisplayName(group.name)}</span>
                 {isDialerGroup && (

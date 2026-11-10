@@ -1,3 +1,4 @@
+import { normalizeGroupIconOverrides } from "@subboost/core/generator/group-icons";
 import type { ConfigActions } from "../definitions";
 import { parseNodeNameFilterConfig } from "@subboost/core/subscription/node-name-filter";
 import type { GetState, SetAndGenerateConfig, SetState } from "../store-types";
@@ -10,6 +11,9 @@ type SettingsActions = Pick<
   | "setTestUrl"
   | "setTestInterval"
   | "setSharedHealthChecks"
+  | "setShowGroupEmoji"
+  | "setShowGroupIcons"
+  | "setGroupIconOverride"
   | "setRuleProviderBaseUrl"
   | "setNodeNameFilter"
   | "setProxyGroupAdvancedModeEnabled"
@@ -45,6 +49,27 @@ export function createSettingsActions(
 
     setSharedHealthChecks: (enabled: boolean) => {
       setAndGenerateConfig(() => ({ sharedHealthChecks: enabled === true }));
+    },
+
+    setShowGroupEmoji: (enabled: boolean) => {
+      setAndGenerateConfig(() => ({ showGroupEmoji: enabled === true }));
+    },
+
+    setShowGroupIcons: (enabled: boolean) => {
+      setAndGenerateConfig(() => ({ showGroupIcons: enabled === true }));
+    },
+
+    setGroupIconOverride: (key, iconId) => {
+      setAndGenerateConfig((state) => {
+        const next = { ...state.groupIconOverrides };
+        if (iconId === null) delete next[key];
+        else {
+          const valid = normalizeGroupIconOverrides({ [key]: iconId });
+          if (!Object.hasOwn(valid, key)) return {};
+          next[key] = valid[key];
+        }
+        return { groupIconOverrides: next };
+      });
     },
 
     setRuleProviderBaseUrl: (url: string) => {

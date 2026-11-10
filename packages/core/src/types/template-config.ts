@@ -43,5 +43,8 @@ export type SubBoostTemplateConfig = {
   testUrl: string;
   testInterval: number;
   sharedHealthChecks?: boolean;
+  showGroupEmoji?: boolean;
+  showGroupIcons?: boolean;
+  groupIconOverrides?: Record<string, string>;
   ruleProviderBaseUrl: string;
 };

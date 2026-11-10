@@ -90,6 +90,9 @@ type Options = {
   testUrl: string;
   testInterval: number;
   sharedHealthChecks: boolean;
+  showGroupEmoji?: boolean;
+  showGroupIcons?: boolean;
+  groupIconOverrides?: Record<string, string>;
   cnIpNoResolve: boolean;
   experimentalCnUseCnRuleSet: boolean;
 };
@@ -125,6 +128,9 @@ export function useSubscriptionLink({
   testUrl,
   testInterval,
   sharedHealthChecks,
+  showGroupEmoji = true,
+  showGroupIcons = false,
+  groupIconOverrides,
   cnIpNoResolve,
   experimentalCnUseCnRuleSet,
 }: Options) {
@@ -402,6 +408,9 @@ export function useSubscriptionLink({
             testUrl,
             testInterval,
             sharedHealthChecks,
+            showGroupEmoji,
+            showGroupIcons,
+            groupIconOverrides,
             cnIpNoResolve,
             experimentalCnUseCnRuleSet,
             autoSelectStrategy: "url-test",
@@ -500,6 +509,9 @@ export function useSubscriptionLink({
     template,
     testInterval,
     sharedHealthChecks,
+    showGroupEmoji,
+    showGroupIcons,
+    groupIconOverrides,
     testUrl,
     trackSubscriptionMutation,
   ]);

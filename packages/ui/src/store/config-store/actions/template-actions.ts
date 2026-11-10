@@ -1,3 +1,4 @@
+import { normalizeGroupIconOverrides } from "@subboost/core/generator/group-icons";
 import { getBuiltinTemplateId } from "@subboost/core/templates/builtin";
 import { TEMPLATES } from "@subboost/core/templates";
 import { ensureCustomRulesHaveIds } from "@subboost/core/rules/custom-rule-utils";
@@ -170,6 +171,9 @@ export function createTemplateActions(
           allowLan: typeof config.allowLan === "boolean" ? config.allowLan : state.allowLan,
           testUrl: typeof config.testUrl === "string" ? config.testUrl : state.testUrl,
           sharedHealthChecks: config.sharedHealthChecks === true,
+          showGroupEmoji: typeof config.showGroupEmoji === "boolean" ? config.showGroupEmoji : state.showGroupEmoji,
+          showGroupIcons: typeof config.showGroupIcons === "boolean" ? config.showGroupIcons : state.showGroupIcons,
+          groupIconOverrides: normalizeGroupIconOverrides(config.groupIconOverrides),
           testInterval:
             typeof config.testInterval === "number" ? config.testInterval : state.testInterval,
           ruleProviderBaseUrl:

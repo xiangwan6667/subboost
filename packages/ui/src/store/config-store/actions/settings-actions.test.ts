@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { createSettingsActions } from "./settings-actions";
+import type { GetState, SetAndGenerateConfig, SetState } from "../store-types";
 
 function createStore(initial: Record<string, unknown> = {}) {
   let state = { ...initial };
@@ -15,6 +16,41 @@ function createStore(initial: Record<string, unknown> = {}) {
 }
 
 describe("config store settings actions", () => {
+  it("saves, disables and resets manual icons independently from both display switches", () => {
+    const store = createStore({ showGroupEmoji: false, showGroupIcons: false, groupIconOverrides: {} });
+    const actions = createSettingsActions(store.set as unknown as SetState, store.get as unknown as GetState,
+      store.setAndGenerateConfig as unknown as SetAndGenerateConfig);
+    actions.setGroupIconOverride("module:select", "Google");
+    actions.setGroupIconOverride("custom:one", "Amazon");
+    actions.setGroupIconOverride("custom:bad", "invalid");
+    expect(store.state()).toEqual({ showGroupEmoji: false, showGroupIcons: false,
+      groupIconOverrides: { "module:select": "Google", "custom:one": "Amazon" } });
+    actions.setShowGroupIcons(true);
+    actions.setShowGroupIcons(false);
+    actions.setGroupIconOverride("module:select", "");
+    actions.setGroupIconOverride("custom:one", null);
+    expect(store.state()).toEqual({ showGroupEmoji: false, showGroupIcons: false, groupIconOverrides: { "module:select": "" } });
+    actions.setGroupIconOverride("module:select", null);
+    expect(store.state().groupIconOverrides).toEqual({});
+  });
+
+  it("updates the emoji and icon settings without changing each other", () => {
+    const store = createStore({ showGroupEmoji: true, showGroupIcons: false });
+    const actions = createSettingsActions(
+      store.set as unknown as SetState,
+      store.get as unknown as GetState,
+      store.setAndGenerateConfig as unknown as SetAndGenerateConfig,
+    );
+    actions.setShowGroupIcons(true);
+    expect(store.state()).toEqual({ showGroupEmoji: true, showGroupIcons: true });
+    actions.setShowGroupEmoji(false);
+    expect(store.state()).toEqual({ showGroupEmoji: false, showGroupIcons: true });
+    actions.setShowGroupIcons(false);
+    expect(store.state()).toEqual({ showGroupEmoji: false, showGroupIcons: false });
+    actions.setShowGroupEmoji(true);
+    expect(store.state()).toEqual({ showGroupEmoji: true, showGroupIcons: false });
+  });
+
   it("updates generated config settings through the generation path", () => {
     const store = createStore();
     const actions = createSettingsActions(store.set as any, store.get as any, store.setAndGenerateConfig as any);

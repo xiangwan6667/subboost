@@ -26,6 +26,18 @@ export function splitLeadingEmoji(raw: string): EmojiSplitResult {
   return { emoji: first, label: rest, hasEmojiPrefix: true };
 }
 
+/** Strip a real emoji prefix for display without removing ordinary punctuation. */
+export function stripLeadingGroupEmoji(raw: string): string {
+  const name = typeof raw === "string" ? raw.trim() : "";
+  const match = /^(\S+)\s+(.+)$/u.exec(name);
+  if (!match) return name;
+  const prefix = match[1];
+  const emojiOnly = /^[\p{Extended_Pictographic}\p{Emoji_Presentation}\p{Emoji_Modifier}\uFE0E\uFE0F\u200D\u{E0020}-\u{E007F}]+$/u.test(prefix) &&
+    /[\p{Extended_Pictographic}\p{Emoji_Presentation}]/u.test(prefix);
+  const keycap = /^(?:[#*0-9]\uFE0F?\u20E3)+$/u.test(prefix);
+  return emojiOnly || keycap || prefix === "₿" ? match[2].trim() : name;
+}
+
 export function resolveProxyGroupModuleName(
   module: { emoji: string; name: string },
   override?: string

@@ -3,6 +3,7 @@
 import * as React from "react";
 import { ArrowRight, Shield } from "lucide-react";
 import { resolveProxyGroupTargetName } from "@subboost/core/proxy-group-targets";
+import { stripLeadingGroupEmoji } from "@subboost/core/proxy-group-name";
 import type { CustomRoutingRuleSetItem } from "@subboost/core/rules/custom-routing-rule-sets";
 import type { CustomProxyGroup, CustomRule } from "@subboost/core/types/config";
 
@@ -14,12 +15,14 @@ export function CustomRulesPreview({
   moduleNames,
   customProxyGroups,
   literalTargetNames,
+  showEmoji = true,
 }: {
   customRules: CustomRule[];
   ruleSets?: CustomRoutingRuleSetItem[];
   moduleNames: Record<string, string>;
   customProxyGroups: CustomProxyGroup[];
   literalTargetNames?: readonly string[];
+  showEmoji?: boolean;
 }) {
   const resolveTargetName = React.useCallback(
     (target: CustomRule["target"]) =>
@@ -91,9 +94,9 @@ export function CustomRulesPreview({
             <ArrowRight className="h-3 w-3 shrink-0 text-fg-35" />
             <span
               className="max-w-[11rem] truncate rounded border border-ink/10 bg-ink/5 px-1.5 py-0.5 text-primary-300"
-              title={rule.target}
+              title={showEmoji ? rule.target : stripLeadingGroupEmoji(rule.target)}
             >
-              {rule.target}
+              {showEmoji ? rule.target : stripLeadingGroupEmoji(rule.target)}
             </span>
           </div>
         ))}

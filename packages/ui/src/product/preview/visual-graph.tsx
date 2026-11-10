@@ -11,6 +11,7 @@ import {
   generateProxyGroups,
 } from "@subboost/core/generator/proxy-groups";
 import { getModuleRuleOrderKey } from "@subboost/core/generator/module-rules";
+import { getBuiltinGroupIcon, matchGroupIcon, resolveGroupIcon } from "@subboost/core/generator/group-icons";
 import { resolveProxyGroupModuleName } from "@subboost/core/proxy-group-name";
 import { resolveProxyGroupTargetName } from "@subboost/core/proxy-group-targets";
 import { resolveNodeNameFilter } from "@subboost/core/subscription/node-name-filter";
@@ -43,6 +44,9 @@ export function VisualGraph() {
     testInterval,
     ruleProviderBaseUrl,
     setProxyGroupOrder,
+    showGroupEmoji,
+    showGroupIcons,
+    groupIconOverrides,
   } = useConfigStore(
     useShallow((state) => ({
       nodes: state.nodes,
@@ -60,6 +64,9 @@ export function VisualGraph() {
       testInterval: state.testInterval,
       ruleProviderBaseUrl: state.ruleProviderBaseUrl,
       setProxyGroupOrder: state.setProxyGroupOrder,
+      showGroupEmoji: state.showGroupEmoji,
+      showGroupIcons: state.showGroupIcons,
+      groupIconOverrides: state.groupIconOverrides,
     })),
   );
   const effectiveNodes = React.useMemo(
@@ -242,6 +249,7 @@ export function VisualGraph() {
           id: `module:${mod.id}`,
           name: resolveModuleName(mod),
           emoji: mod.emoji,
+          iconUrl: showGroupIcons === true ? resolveGroupIcon(groupIconOverrides, `module:${mod.id}`, getBuiltinGroupIcon(mod.id)) : undefined,
           groupType: proxyGroupAdvanced?.[mod.id]?.groupType ?? mod.groupType,
           strategy: proxyGroupAdvanced?.[mod.id]?.strategy,
           category: mod.category,
@@ -254,6 +262,7 @@ export function VisualGraph() {
         id: cg ? `custom:${cg.id}` : `name:${groupName}`,
         name: groupName,
         emoji: cg?.emoji || "🧩",
+        iconUrl: cg && showGroupIcons === true ? resolveGroupIcon(groupIconOverrides, `custom:${cg.id}`, matchGroupIcon(cg.name, cg.description)) : undefined,
         groupType: cg?.groupType || g.type,
         strategy: cg?.strategy || g.strategy,
         category: "custom",
@@ -356,6 +365,8 @@ export function VisualGraph() {
     proxyGroupOrder,
     moduleNames,
     literalTargetNames,
+    showGroupIcons,
+    groupIconOverrides,
     resolveModuleName,
   ]);
 
@@ -468,6 +479,8 @@ export function VisualGraph() {
 
       <ProxyGroupsPreview
         displayGroups={displayGroups}
+        showEmoji={showGroupEmoji !== false}
+        showIcons={showGroupIcons === true}
         expandedGroups={expandedGroups}
         draggingGroupId={draggingGroupId}
         dragOverGroup={dragOverGroup}
@@ -533,6 +546,7 @@ export function VisualGraph() {
       </div>
 
       <CustomRulesPreview
+        showEmoji={showGroupEmoji !== false}
         customRules={customRules}
         ruleSets={customRoutingRuleSets}
         moduleNames={moduleNames}

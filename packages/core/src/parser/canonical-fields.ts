@@ -16,7 +16,7 @@ const GRPC_SERVICE_NAME_TYPES = ["vmess", "vless", "trojan"] as const;
 
 export const PROTOCOL_FIELD_ALIAS_RULES: readonly AliasRule[] = [
   {
-    types: ["vless"],
+    types: ["vless", "miu"],
     canonical: ["reality-opts", "public-key"],
     aliases: [
       ["reality-opts", "pbk"],
@@ -29,7 +29,7 @@ export const PROTOCOL_FIELD_ALIAS_RULES: readonly AliasRule[] = [
     ],
   },
   {
-    types: ["vless"],
+    types: ["vless", "miu"],
     canonical: ["reality-opts", "short-id"],
     aliases: [
       ["reality-opts", "sid"],
@@ -51,6 +51,11 @@ export const PROTOCOL_FIELD_ALIAS_RULES: readonly AliasRule[] = [
     types: CLIENT_FINGERPRINT_TYPES,
     canonical: ["client-fingerprint"],
     aliases: [["fp"], ["fingerprint"], ["clientFingerprint"]],
+  },
+  {
+    types: ["miu"],
+    canonical: ["client-fingerprint"],
+    aliases: [["fp"], ["clientFingerprint"]],
   },
   {
     types: PACKET_ENCODING_TYPES,

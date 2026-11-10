@@ -188,6 +188,9 @@ export interface UserConfig {
   testUrl: string;
   testInterval: number;
   sharedHealthChecks?: boolean;
+  showGroupEmoji?: boolean;
+  showGroupIcons?: boolean;
+  groupIconOverrides?: Record<string, string>;
   
   // 规则设置
   ruleProviderBaseUrl: string;

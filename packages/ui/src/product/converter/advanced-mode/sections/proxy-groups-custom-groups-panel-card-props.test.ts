@@ -33,7 +33,8 @@ vi.mock("@subboost/core/generator/proxy-groups", () => ({
   ],
 }));
 
-vi.mock("@subboost/core/proxy-group-name", () => ({
+vi.mock("@subboost/core/proxy-group-name", async (importOriginal) => ({
+  ...await importOriginal<typeof import("@subboost/core/proxy-group-name")>(),
   resolveProxyGroupModuleName: (module: { name: string }, override?: string) => override || module.name,
 }));
 

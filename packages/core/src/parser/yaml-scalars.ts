@@ -29,8 +29,10 @@ function integerText(text: string): string {
 export function loadSubscriptionYaml(content: string): unknown {
   const parsed = loadMihomoYaml(content, scalarSchema);
   const seen = new WeakMap<object, unknown>();
-  const normalize = (value: unknown, field = ""): unknown => {
+  const shortIdAliases = new Set(["sid", "shortId", "short_id", "shortid"]);
+  const normalize = (value: unknown, field = "", allowRealityAliases = false): unknown => {
     if (value instanceof YamlInteger) {
+      if (field === "short-id" || (allowRealityAliases && shortIdAliases.has(field))) return value.text;
       return MIHOMO_STRING_SCALAR_FIELDS.has(field) ? integerText(value.text) : value.number;
     }
     if (!value || typeof value !== "object") return value;
@@ -44,8 +46,11 @@ export function loadSubscriptionYaml(content: string): unknown {
     }
     const out: Record<string, unknown> = {};
     seen.set(value, out);
+    const rawType = (value as Record<string, unknown>).type;
+    const nodeType = typeof rawType === "string" ? rawType.trim().toLowerCase() : "";
+    const realityScope = nodeType === "miu" || nodeType === "vless" || (field === "reality-opts" && allowRealityAliases);
     for (const [key, child] of Object.entries(value)) {
-      Object.defineProperty(out, key, { value: normalize(child, key), enumerable: true, writable: true, configurable: true });
+      Object.defineProperty(out, key, { value: normalize(child, key, realityScope), enumerable: true, writable: true, configurable: true });
     }
     return out;
   };

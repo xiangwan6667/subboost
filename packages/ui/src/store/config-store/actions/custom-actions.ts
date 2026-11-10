@@ -189,8 +189,13 @@ export function createCustomActions(
         const nextGroupListeners = state.groupListeners.filter(
           (binding) => !(binding && binding.target && binding.target.kind === "custom" && binding.target.id === id),
         );
+        const groupIconOverrides = { ...state.groupIconOverrides };
+        const removedIconKey = `custom:${id}`;
+        const hadIconOverride = Object.hasOwn(groupIconOverrides, removedIconKey);
+        delete groupIconOverrides[removedIconKey];
         return {
           customProxyGroups: nextCustomProxyGroups,
+          ...(hadIconOverride ? { groupIconOverrides } : {}),
           customRules: nextCustomRules,
           customRuleSets: nextCustomRuleSets,
           builtinRuleEdits: nextBuiltinRuleEdits,

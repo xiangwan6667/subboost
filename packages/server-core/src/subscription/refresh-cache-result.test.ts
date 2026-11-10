@@ -30,6 +30,19 @@ function snapshot(patch: Partial<RefreshNodeSnapshotResult> = {}): RefreshNodeSn
 }
 
 describe("prepareRefreshCacheResult", () => {
+  it("keeps the approved icons in regenerated subscription output", () => {
+    const result = prepareRefreshCacheResult({
+      config: { enabledGroups: ["shopping", "crypto", "google-scholar"], dnsYaml: "", showGroupIcons: true },
+      snapshot: snapshot(),
+      maxNodesPerSubscription: 100,
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error("expected successful refresh");
+    expect(result.generatedYaml).toContain("/Amazon/Amazon/Amazon.png");
+    expect(result.generatedYaml).toContain("/Payment/Binance/Binance.png");
+    expect(result.generatedYaml).toContain("/Google/GoogleScholar/GoogleScholar.png");
+  });
+
   it("keeps previous cache when every refreshable source failed", () => {
     expect(
       prepareRefreshCacheResult({

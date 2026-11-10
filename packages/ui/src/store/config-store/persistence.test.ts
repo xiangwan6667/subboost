@@ -10,6 +10,21 @@ import {
 } from "./persistence";
 
 describe("config store persistence", () => {
+  it("restores manual icon selections and drops invalid imported catalog entries", () => {
+    const saved = partializeConfigState({ ...initialState, groupIconOverrides: {
+      "module:select": "Google", "custom:one": "", "module:missing": "Amazon", "custom:bad": "invalid",
+    } });
+    expect(normalizePersistedConfigState(saved).groupIconOverrides).toEqual({ "module:select": "Google", "custom:one": "" });
+  });
+
+  it.each([[true, true], [true, false], [false, true], [false, false]])(
+    "round-trips emoji=%s and icons=%s independently",
+    (showGroupEmoji, showGroupIcons) => {
+      const saved = partializeConfigState({ ...initialState, showGroupEmoji, showGroupIcons });
+      expect(normalizePersistedConfigState(saved)).toMatchObject({ showGroupEmoji, showGroupIcons });
+    },
+  );
+
   it("continues without storage when its getter fails or no browser exists", () => {
     const missing = createSafeConfigDraftStorage(() => null);
     const throwing = createSafeConfigDraftStorage(() => {

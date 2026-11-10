@@ -1,6 +1,6 @@
 /**
  * 订阅解析引擎 - 浏览器端运行
- * 支持: Base64, SSD, Clash YAML, SS/SSR, VMess, VLESS, Trojan, AnyTLS, Hysteria2, TUIC, SOCKS, HTTP, SSH
+ * 支持: Base64, SSD, Clash YAML, SS/SSR, VMess, VLESS, Trojan, AnyTLS, Miu, Hysteria2, TUIC, SOCKS, HTTP, SSH
  */
 
 import { parseBase64 } from "./base64";
@@ -48,6 +48,7 @@ export * from "./protocols/vmess";
 export * from "./protocols/vless";
 export * from "./protocols/trojan";
 export * from "./protocols/anytls";
+export * from "./protocols/miu";
 export * from "./protocols/hysteria";
 export * from "./protocols/hysteria2";
 export * from "./protocols/tuic";

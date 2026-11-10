@@ -1,3 +1,4 @@
+import { normalizeGroupIconOverrides } from "@subboost/core/generator/group-icons";
 import type { GenerateOptions } from "@subboost/core/generator";
 import { normalizePersistedRuleOrder } from "@subboost/core/generator/rules";
 import type { DialerProxyGroup } from "@subboost/core/types/template-config";
@@ -322,6 +323,9 @@ export function buildGenerateOptionsFromConfig(
     testUrl,
     testInterval,
     sharedHealthChecks: config.sharedHealthChecks === true,
+    showGroupEmoji: config.showGroupEmoji !== false,
+    showGroupIcons: config.showGroupIcons === true,
+    groupIconOverrides: normalizeGroupIconOverrides(config.groupIconOverrides),
     ...(cnIpNoResolve !== undefined ? { cnIpNoResolve } : {}),
     ...(experimentalCnUseCnRuleSet !== undefined ? { experimentalCnUseCnRuleSet } : {}),
     ...(normalizePort(config.mixedPort) !== undefined ? { mixedPort: normalizePort(config.mixedPort) as number } : {}),

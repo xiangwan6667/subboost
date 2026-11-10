@@ -8,6 +8,19 @@ import { DEFAULT_LOAD_BALANCE_STRATEGY } from "@subboost/core/types/config";
 import { expectInvalid, validConfig } from "./config-template.test-helpers";
 
 describe("validateSubBoostTemplateConfig", () => {
+  it("round-trips manual icon selections and rejects invalid maps", () => {
+    const groupIconOverrides = { "module:select": "Google", "custom:one": "" };
+    const result = validateSubBoostTemplateConfig(validConfig({ groupIconOverrides }));
+    expect(result.ok).toBe(true);
+    if (!result.ok) throw new Error(result.error);
+    expect(result.config.groupIconOverrides).toEqual(groupIconOverrides);
+    for (const value of [[], null, { "module:missing": "Google" }, { "module:select": "invalid" }]) {
+      expect(validateSubBoostTemplateConfig({ ...validConfig(), groupIconOverrides: value })).toEqual({
+        ok: false, error: "groupIconOverrides 包含无效的分组或图标",
+      });
+    }
+  });
+
   it("round-trips independent test URLs and rejects malformed dialer addresses", () => {
     const testUrl = "https://local.subboost.test/probe";
     const dialer = { id: "relay", name: "Relay", type: "url-test" as const, relayNodes: ["A"], targetNodes: ["B"], testUrl };

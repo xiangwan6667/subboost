@@ -223,6 +223,9 @@ export interface ConfigState {
   testUrl: string;
   testInterval: number;
   sharedHealthChecks: boolean;
+  showGroupEmoji: boolean;
+  showGroupIcons: boolean;
+  groupIconOverrides: Record<string, string>;
   ruleProviderBaseUrl: string;
   cnIpNoResolve: boolean;
   experimentalCnUseCnRuleSet: boolean;
@@ -317,6 +320,9 @@ export interface ConfigActions {
   setTestUrl: (url: string) => void;
   setTestInterval: (interval: number) => void;
   setSharedHealthChecks: (enabled: boolean) => void;
+  setShowGroupEmoji: (enabled: boolean) => void;
+  setShowGroupIcons: (enabled: boolean) => void;
+  setGroupIconOverride: (key: string, iconId: string | null) => void;
   setRuleProviderBaseUrl: (url: string) => void;
   setProxyGroupAdvancedModeEnabled: (value: boolean) => void;
   setCnIpNoResolve: (value: boolean) => void;
@@ -389,6 +395,9 @@ export const initialState: ConfigState = {
   testUrl: DEFAULT_SUBBOOST_CONFIG.testUrl,
   testInterval: DEFAULT_SUBBOOST_CONFIG.testInterval,
   sharedHealthChecks: DEFAULT_SUBBOOST_CONFIG.sharedHealthChecks,
+  showGroupEmoji: true,
+  showGroupIcons: false,
+  groupIconOverrides: {},
   ruleProviderBaseUrl: DEFAULT_SUBBOOST_CONFIG.ruleProviderBaseUrl,
   cnIpNoResolve: DEFAULT_SUBBOOST_CONFIG.cnIpNoResolve,
   experimentalCnUseCnRuleSet: DEFAULT_SUBBOOST_CONFIG.experimentalCnUseCnRuleSet,

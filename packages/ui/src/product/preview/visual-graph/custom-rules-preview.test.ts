@@ -12,6 +12,17 @@ vi.mock("lucide-react", () => ({
 import { CustomRulesPreview } from "./custom-rules-preview";
 
 describe("CustomRulesPreview", () => {
+  it("hides the emoji on a target when group emoji are disabled", () => {
+    const html = renderToStaticMarkup(React.createElement(CustomRulesPreview, {
+      customRules: [{ id: "r", type: "DOMAIN", value: "example.test", target: { kind: "module", id: "select" } }],
+      moduleNames: { select: "🚀 节点选择" },
+      customProxyGroups: [],
+      showEmoji: false,
+    }));
+    expect(html).toContain("节点选择");
+    expect(html).not.toContain("🚀");
+  });
+
   it("renders nothing when there are no custom rules or rule sets", () => {
     expect(
       renderToStaticMarkup(

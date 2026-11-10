@@ -214,6 +214,7 @@ describe("VisualGraph", () => {
     expect(html).toContain("3");
     expect(mocks.captures.protocolBadges.map((props: any) => props.type)).toEqual(["ss", "vless", "trojan"]);
     expect(mocks.captures.customRulesPreview).toEqual({
+      showEmoji: true,
       customRules: [{ id: "manual" }],
       ruleSets: [{ id: "rs1" }],
       moduleNames: {
@@ -273,6 +274,7 @@ describe("VisualGraph", () => {
       expect.objectContaining({ id: "module:select", name: "🚀 节点选择" }),
     ]);
     expect(mocks.captures.customRulesPreview).toEqual({
+      showEmoji: true,
       customRules: [],
       ruleSets: [],
       moduleNames: {

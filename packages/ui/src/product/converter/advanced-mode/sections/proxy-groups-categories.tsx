@@ -25,6 +25,7 @@ import {
 } from "@subboost/core/generator/proxy-groups";
 import type { EffectiveModuleRuleSource, HiddenPresetRuleIds } from "@subboost/core/generator/module-rules";
 import { resolveProxyGroupModuleName } from "@subboost/core/proxy-group-name";
+import { getBuiltinGroupIcon, resolveGroupIcon } from "@subboost/core/generator/group-icons";
 import { resolveProxyGroupTargetName } from "@subboost/core/proxy-group-targets";
 import { resolveNodeNameFilter } from "@subboost/core/subscription/node-name-filter";
 import { useConfigStore, type RuleSetDraft } from "@subboost/ui/store/config-store";
@@ -35,6 +36,7 @@ import {
 import { ProxyGroupsCustomGroupsPanel } from "./proxy-groups-custom-groups-panel";
 import { ProxyGroupsCustomRoutingRules } from "./proxy-groups-custom-routing-rules";
 import { ProxyGroupAdvancedPanel } from "./proxy-group-advanced-panel";
+import { GroupIconPicker } from "./group-icon-picker";
 import { ProxyGroupsModuleCard } from "./proxy-groups-module-card";
 import { GroupAdvancedSettingsDialog } from "./group-advanced-settings-dialog";
 import { findGroupListenerBinding } from "./group-listener-settings";
@@ -78,6 +80,11 @@ export function ProxyGroupsCategories() {
     proxyGroupAdvanced = {},
     proxyGroupAdvancedModeEnabled,
     setProxyGroupAdvancedModeEnabled,
+    showGroupEmoji,
+    showGroupIcons,
+    groupIconOverrides,
+    setShowGroupEmoji,
+    setShowGroupIcons,
     updateProxyGroupAdvanced,
     dialerProxyGroups = [],
     groupListeners = [],
@@ -344,6 +351,14 @@ export function ProxyGroupsCategories() {
       <div className="space-y-1">
         <div className={PROXY_GROUP_SECTION_LABEL_ROW_CLASS}>
           <p className={PROXY_GROUP_SECTION_LABEL_CLASS}>分流规则组</p>
+          <div className="ml-auto flex items-center gap-1.5 text-xs text-fg-60">
+            表情
+            <Switch aria-label="显示表情" checked={showGroupEmoji !== false} onCheckedChange={setShowGroupEmoji} />
+          </div>
+          <div className="flex items-center gap-1.5 text-xs text-fg-60">
+            图标
+            <Switch aria-label="显示图标" checked={showGroupIcons === true} onCheckedChange={setShowGroupIcons} />
+          </div>
           {hiddenModules.length > 0 && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -351,7 +366,7 @@ export function ProxyGroupsCategories() {
                   type="button"
                   variant="outline"
                   size="sm"
-                  className="ml-auto h-6 gap-1 rounded-md px-2 text-[10px] text-fg-60 hover:bg-ink/10 hover:text-fg-85"
+                  className="h-6 gap-1 rounded-md px-2 text-[10px] text-fg-60 hover:bg-ink/10 hover:text-fg-85"
                   title="恢复隐藏分组"
                 >
                   <RotateCcw className="h-3 w-3" />
@@ -549,6 +564,9 @@ export function ProxyGroupsCategories() {
                               key={module.id}
                               module={module}
                               display={display}
+                              showEmoji={showGroupEmoji !== false}
+                              iconUrl={showGroupIcons === true ? resolveGroupIcon(groupIconOverrides, `module:${module.id}`, getBuiltinGroupIcon(module.id)) : undefined}
+                              iconPicker={<GroupIconPicker targetKey={`module:${module.id}`} groupName={display.full} automaticIconUrl={getBuiltinGroupIcon(module.id)} />}
                               isCore={isCore}
                               isEnabled={isEnabled}
                               onToggleEnabled={handleToggleEnabled}

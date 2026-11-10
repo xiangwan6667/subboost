@@ -23,8 +23,19 @@
 - **Chained proxies**: Configure chained proxies and `relay proxy groups` visually in one click.
 - **Precise routing**: Enable more than 30 common proxy groups and over 2,000 remote rule sets.
 - **Rule management**: Reorder rules for deeper customization by advanced users.
+- **Group display**: Toggle emoji and icons independently. Search and select each group's icon, restore automatic matching, or hide its icon. Built-in groups have default icons; custom group names and descriptions are matched against Oasisic-Icons when possible.
 - **DNS leak prevention**: The default `basic and DNS configuration` helps prevent DNS leaks.
 - **Automatic refresh**: Refresh subscriptions on a schedule and intelligently match nodes during refresh.
+
+## Miu subscriptions
+
+Import Mihomo YAML containing `type: miu`, Base64-encoded YAML, or the SubBoost compatibility link format:
+
+```text
+miu://<URL-encoded-PSK>@example.com:443?sni=example.com&udp=1#Miu
+```
+
+Optional parameters include `security=tls` or `security=reality`, `pbk`, `sid`, `fp`, `alpn`, `skip-cert-verify`, `idle-session-timeout`, and `min-idle-session`. The `miu://` format is a SubBoost extension, not an official Miu share-link specification. Generated Miu nodes require a Miu-enabled Mihomo core.
 
 ## Interface Preview
 

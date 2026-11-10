@@ -1,4 +1,5 @@
 import { parseAnyTLS } from "./protocols/anytls";
+import { parseMiu } from "./protocols/miu";
 import { parseHysteria } from "./protocols/hysteria";
 import { parseHysteria2 } from "./protocols/hysteria2";
 import { parseSimpleProxy, parseSocks, parseTelegramProxyLink } from "./protocols/simple-proxy";
@@ -72,6 +73,11 @@ const LINK_PARSERS: LinkParserDefinition[] = [
     name: "anytls",
     test: (link) => link.startsWith("anytls://"),
     parse: (link) => parseAnyTLS(link),
+  },
+  {
+    name: "miu",
+    test: (link) => link.startsWith("miu://"),
+    parse: (link) => parseMiu(link),
   },
   {
     name: "hysteria",

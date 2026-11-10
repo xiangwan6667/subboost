@@ -1,3 +1,4 @@
+import { normalizeGroupIconOverrides } from "../generator/group-icons";
 import { PROXY_GROUP_MODULES } from "@subboost/core/generator/proxy-groups";
 import { normalizePersistedRuleOrder } from "@subboost/core/generator/rules";
 import { ensureCustomRuleId, isCustomRuleType } from "@subboost/core/rules/custom-rule-utils";
@@ -99,6 +100,15 @@ export function validateSubBoostTemplateConfig(value: unknown): ValidationResult
   if (!testInterval.ok) return testInterval;
   const sharedHealthChecks = parseOptionalBoolean(value.sharedHealthChecks, "sharedHealthChecks");
   if (!sharedHealthChecks.ok) return sharedHealthChecks;
+  const showGroupEmoji = parseOptionalBoolean(value.showGroupEmoji, "showGroupEmoji");
+  if (!showGroupEmoji.ok) return showGroupEmoji;
+  const showGroupIcons = parseOptionalBoolean(value.showGroupIcons, "showGroupIcons");
+  if (!showGroupIcons.ok) return showGroupIcons;
+  const groupIconOverrides = normalizeGroupIconOverrides(value.groupIconOverrides);
+  if (value.groupIconOverrides !== undefined && (!isRecord(value.groupIconOverrides) ||
+      Object.keys(groupIconOverrides).length !== Object.keys(value.groupIconOverrides).length)) {
+    return invalid("groupIconOverrides 包含无效的分组或图标");
+  }
   const ruleProviderBaseUrl = parseHttpUrlString(value.ruleProviderBaseUrl, "ruleProviderBaseUrl");
   if (!ruleProviderBaseUrl.ok) return ruleProviderBaseUrl;
   const cnIpNoResolve = parseOptionalBoolean(value.cnIpNoResolve, "cnIpNoResolve");
@@ -151,6 +161,9 @@ export function validateSubBoostTemplateConfig(value: unknown): ValidationResult
       testUrl: testUrl.value,
       testInterval: testInterval.value,
       sharedHealthChecks: sharedHealthChecks.value ?? false,
+      ...(showGroupEmoji.value !== undefined ? { showGroupEmoji: showGroupEmoji.value } : {}),
+      ...(showGroupIcons.value !== undefined ? { showGroupIcons: showGroupIcons.value } : {}),
+      ...(value.groupIconOverrides !== undefined ? { groupIconOverrides } : {}),
       ruleProviderBaseUrl: ruleProviderBaseUrl.value,
     },
   };

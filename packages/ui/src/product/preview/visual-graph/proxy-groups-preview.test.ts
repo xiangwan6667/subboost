@@ -137,6 +137,25 @@ afterEach(() => {
 });
 
 describe("ProxyGroupsPreview", () => {
+  it.each([[true, true], [true, false], [false, true], [false, false]])(
+    "renders emoji=%s and icons=%s independently",
+    (showEmoji, showIcons) => {
+      const html = renderPreview({
+        showEmoji,
+        showIcons,
+        displayGroups: [{ ...groups[0], name: "🐱 GitHub", emoji: "🐱", iconUrl: "https://example.test/github.png" }],
+      });
+      expect(html.includes("🐱")).toBe(showEmoji);
+      expect(html.includes("github.png")).toBe(showIcons);
+      expect(html).toContain("GitHub");
+    },
+  );
+
+  it("keeps ordinary multiword names intact", () => {
+    const html = renderPreview({ displayGroups: [{ ...groups[0], name: "Cloud Services" }] });
+    expect(html).toContain("Cloud Services");
+  });
+
   it("renders group labels, defaults, rules, drag markers, and horizontal dialer layout", () => {
     const html = renderPreview();
 

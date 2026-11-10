@@ -1,3 +1,4 @@
+import { normalizeGroupIconOverrides } from "@subboost/core/generator/group-icons";
 import type { ConfigState, SourceType, SubscriptionSource } from "./definitions";
 import { initialState } from "./definitions";
 import { safeParseJsonObject } from "@subboost/core/json";
@@ -136,6 +137,9 @@ function hasMeaningfulConfig(state: ConfigState): boolean {
     state.testUrl !== initialState.testUrl ||
     state.testInterval !== initialState.testInterval ||
     state.sharedHealthChecks !== initialState.sharedHealthChecks ||
+    state.showGroupEmoji !== initialState.showGroupEmoji ||
+    state.showGroupIcons !== initialState.showGroupIcons ||
+    Object.keys(state.groupIconOverrides ?? {}).length > 0 ||
     state.ruleProviderBaseUrl !== initialState.ruleProviderBaseUrl ||
     state.cnIpNoResolve !== initialState.cnIpNoResolve ||
     state.experimentalCnUseCnRuleSet !== initialState.experimentalCnUseCnRuleSet ||
@@ -172,6 +176,9 @@ function buildHandoffState(state: ConfigState): Partial<ConfigState> {
     testUrl: state.testUrl,
     testInterval: state.testInterval,
     sharedHealthChecks: state.sharedHealthChecks,
+    showGroupEmoji: state.showGroupEmoji,
+    showGroupIcons: state.showGroupIcons,
+    groupIconOverrides: normalizeGroupIconOverrides(state.groupIconOverrides),
     ruleProviderBaseUrl: state.ruleProviderBaseUrl,
     cnIpNoResolve: state.cnIpNoResolve,
     experimentalCnUseCnRuleSet: state.experimentalCnUseCnRuleSet,
@@ -237,6 +244,9 @@ function normalizeHandoffState(raw: unknown): Partial<ConfigState> | null {
   if (typeof raw.testUrl === "string") out.testUrl = raw.testUrl;
   if (typeof raw.testInterval === "number" && Number.isFinite(raw.testInterval)) out.testInterval = raw.testInterval;
   out.sharedHealthChecks = raw.sharedHealthChecks === true;
+  if (typeof raw.showGroupEmoji === "boolean") out.showGroupEmoji = raw.showGroupEmoji;
+  if (typeof raw.showGroupIcons === "boolean") out.showGroupIcons = raw.showGroupIcons;
+  if (raw.groupIconOverrides !== undefined) out.groupIconOverrides = normalizeGroupIconOverrides(raw.groupIconOverrides);
   if (typeof raw.ruleProviderBaseUrl === "string") out.ruleProviderBaseUrl = raw.ruleProviderBaseUrl;
   if (typeof raw.cnIpNoResolve === "boolean") out.cnIpNoResolve = raw.cnIpNoResolve;
   if (typeof raw.experimentalCnUseCnRuleSet === "boolean") {
