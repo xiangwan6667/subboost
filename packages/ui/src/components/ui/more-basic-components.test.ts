@@ -21,7 +21,7 @@ import {
   getArtisticNavIconClassName,
 } from "./artistic-nav";
 import { Label } from "./label";
-import { ProtocolBadge, getProtocolBadgeClass } from "./protocol-badge";
+import { ProtocolBadge, getProtocolBadgeClass, getProtocolColorClass } from "./protocol-badge";
 import { SafeImage } from "./safe-image";
 import { Textarea } from "./textarea";
 
@@ -50,7 +50,7 @@ describe("additional basic UI components", () => {
   });
 
   it("computes protocol and artistic nav classes", () => {
-    expect(getProtocolBadgeClass(" vmess ")).toContain("purple");
+    expect(getProtocolBadgeClass(" vmess ")).toContain("text-blue-400");
     expect(getProtocolBadgeClass("unknown")).toContain("slate");
     expect(getArtisticNavButtonClassName({ active: true, size: "md", className: "extra" })).toContain("extra");
     expect(getArtisticNavButtonClassName({ active: true, size: "md" })).toContain("text-seg-active-fg");
@@ -61,5 +61,33 @@ describe("additional basic UI components", () => {
     expect(artisticTabsListClassName).toContain("h-auto");
     expect(artisticTabsTriggerClassName).toContain("data-[state=active]");
     expect(artisticTabsIconClassName).toContain("group-data-[state=active]");
+  });
+
+  it.each([
+    ["ss", "green"],
+    ["socks5", "yellow"],
+    ["trojan", "red"],
+    ["vless", "purple"],
+    ["vmess", "blue"],
+    ["hysteria2", "indigo"],
+    ["anytls", "teal"],
+    ["miu", "pink"],
+    ["http", "cyan"],
+    ["snell", "lime"],
+    ["mieru", "amber"],
+    ["wireguard", "orange"],
+  ])("uses the reference color for %s badges and preview dots", (type, color) => {
+    expect(getProtocolColorClass(type)).toBe(`text-${color}-400`);
+    expect(getProtocolBadgeClass(type)).toContain(getProtocolColorClass(type));
+    expect(getProtocolBadgeClass(type)).toContain("bg-current/20 border-current/20");
+  });
+
+  it("normalizes protocol names, shares alias colors, and safely handles unknown types", () => {
+    expect(getProtocolColorClass(" SS ")).toBe(getProtocolColorClass("ss"));
+    expect(getProtocolColorClass("hy2")).toBe(getProtocolColorClass("hysteria2"));
+    expect(getProtocolColorClass("https")).toBe(getProtocolColorClass("http"));
+    for (const type of [undefined, "", "unknown", "constructor", "__proto__"]) {
+      expect(getProtocolColorClass(type)).toBe("text-slate-200");
+    }
   });
 });

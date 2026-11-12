@@ -277,7 +277,7 @@ describe("public UI helper branch coverage", () => {
     expect(pager).toContain("pager");
     expect(pager).toContain("/ 1");
 
-    expect(getProtocolBadgeClass(" VMess ")).toContain("purple");
+    expect(getProtocolBadgeClass(" VMess ")).toContain("text-blue-400");
     expect(getProtocolBadgeClass(undefined)).toContain("slate");
     expect(
       renderToStaticMarkup(React.createElement(ProtocolBadge, { type: "unknown", className: "proto" }))

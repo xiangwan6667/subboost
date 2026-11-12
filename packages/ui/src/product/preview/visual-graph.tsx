@@ -3,7 +3,7 @@
 import * as React from "react";
 import { Network, Server } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
-import { ProtocolBadge } from "@subboost/ui/components/ui/protocol-badge";
+import { ProtocolBadge, getProtocolColorClass } from "@subboost/ui/components/ui/protocol-badge";
 import { cn } from "@subboost/ui/lib/utils";
 import { useConfigStore } from "@subboost/ui/store/config-store";
 import {
@@ -512,20 +512,8 @@ export function VisualGraph() {
             >
               <div
                 className={cn(
-                  "h-2 w-2 rounded-full flex-shrink-0 shadow-[0_0_0_3px_color-mix(in_oklab,var(--ink)_3%,transparent)]",
-                  node.type === "ss"
-                    ? "bg-blue-400"
-                    : node.type === "vmess"
-                      ? "bg-green-400"
-                      : node.type === "vless"
-                        ? "bg-purple-400"
-                        : node.type === "trojan"
-                          ? "bg-red-400"
-                          : node.type === "anytls"
-                            ? "bg-teal-400"
-                            : node.type === "hysteria2"
-                              ? "bg-orange-400"
-                              : "bg-gray-400",
+                  "h-2 w-2 rounded-full flex-shrink-0 bg-current shadow-[0_0_0_3px_color-mix(in_oklab,var(--ink)_3%,transparent)]",
+                  getProtocolColorClass(node.type),
                 )}
               />
               <span

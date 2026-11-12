@@ -60,7 +60,8 @@ vi.mock("lucide-react", () => ({
   Network: () => null,
   Server: () => null,
 }));
-vi.mock("@subboost/ui/components/ui/protocol-badge", () => ({
+vi.mock("@subboost/ui/components/ui/protocol-badge", async (importOriginal) => ({
+  ...await importOriginal<typeof import("@subboost/ui/components/ui/protocol-badge")>(),
   ProtocolBadge: (props: any) => {
     mocks.captures.protocolBadges.push(props);
     return null;
@@ -386,6 +387,8 @@ describe("VisualGraph", () => {
       { name: "Plain Custom", type: "fallback", strategy: "consistent-hashing", proxies: [] },
     ];
     mocks.store.nodes = [
+      { name: "SS", type: "ss", cipher: "aes-128-gcm" },
+      { name: "SS2022", type: "ss", cipher: "2022-blake3-aes-128-gcm" },
       { name: "AnyTLS", type: "anytls" },
       { name: "Mystery", type: "unknown" },
     ];
@@ -410,9 +413,10 @@ describe("VisualGraph", () => {
       relayNodes: [],
       targetNodes: [],
     });
-    expect(mocks.captures.protocolBadges.map((props: any) => props.type)).toEqual(["anytls", "unknown"]);
-    expect(html).toContain("bg-teal-400");
-    expect(html).toContain("bg-gray-400");
+    expect(mocks.captures.protocolBadges.map((props: any) => props.type)).toEqual(["ss", "ss", "anytls", "unknown"]);
+    expect(html.match(/bg-current[^"]*text-green-400/g)).toHaveLength(2);
+    expect(html).toContain("text-teal-400");
+    expect(html).toContain("text-slate-200");
   });
 
   it("merges built-in rule edits moved from another module and skips invalid edit records", () => {

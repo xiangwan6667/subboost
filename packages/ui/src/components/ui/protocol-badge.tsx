@@ -1,30 +1,35 @@
 import type { ComponentPropsWithoutRef } from "react";
 import { cn } from "@subboost/ui/lib/utils";
 
-const PROTOCOL_BADGE_COLORS: Record<string, string> = {
-  ss: "bg-blue-500/20 text-blue-200 border-blue-500/20",
-  ssr: "bg-blue-500/20 text-blue-200 border-blue-500/20",
-  vmess: "bg-purple-500/20 text-purple-200 border-purple-500/20",
-  vless: "bg-emerald-500/20 text-emerald-200 border-emerald-500/20",
-  trojan: "bg-red-500/20 text-red-200 border-red-500/20",
-  anytls: "bg-teal-500/20 text-teal-200 border-teal-500/20",
-  miu: "bg-pink-400/10 text-pink-400 border-pink-400/20",
-  hysteria2: "bg-orange-500/20 text-orange-200 border-orange-500/20",
-  hy2: "bg-orange-500/20 text-orange-200 border-orange-500/20",
-  tuic: "bg-cyan-500/20 text-cyan-200 border-cyan-500/20",
-  socks5: "bg-slate-500/20 text-slate-200 border-slate-500/20",
-  socks4: "bg-slate-500/20 text-slate-200 border-slate-500/20",
-  http: "bg-amber-500/20 text-amber-200 border-amber-500/20",
-  https: "bg-amber-500/20 text-amber-200 border-amber-500/20",
-  ssh: "bg-pink-500/20 text-pink-200 border-pink-500/20",
-  relay: "bg-violet-500/20 text-violet-200 border-violet-500/20",
+const PROTOCOL_COLORS: Record<string, string> = {
+  ss: "text-green-400",
+  ssr: "text-blue-200",
+  vmess: "text-blue-400",
+  vless: "text-purple-400",
+  trojan: "text-red-400",
+  anytls: "text-teal-400",
+  miu: "text-pink-400",
+  hysteria2: "text-indigo-400",
+  hy2: "text-indigo-400",
+  tuic: "text-cyan-200",
+  socks5: "text-yellow-400",
+  socks4: "text-slate-200",
+  http: "text-cyan-400",
+  https: "text-cyan-400",
+  snell: "text-lime-400",
+  mieru: "text-amber-400",
+  wireguard: "text-orange-400",
+  ssh: "text-pink-200",
+  relay: "text-violet-200",
 };
 
-const DEFAULT_PROTOCOL_BADGE_CLASS = "bg-slate-500/20 text-slate-200 border-slate-500/20";
+export function getProtocolColorClass(type: string | undefined): string {
+  const key = (type ?? "").trim().toLowerCase();
+  return Object.hasOwn(PROTOCOL_COLORS, key) ? PROTOCOL_COLORS[key] : "text-slate-200";
+}
 
 export function getProtocolBadgeClass(type: string | undefined): string {
-  const key = (type ?? "").trim().toLowerCase();
-  return Object.hasOwn(PROTOCOL_BADGE_COLORS, key) ? PROTOCOL_BADGE_COLORS[key] : DEFAULT_PROTOCOL_BADGE_CLASS;
+  return cn("bg-current/20 border-current/20", getProtocolColorClass(type));
 }
 
 type ProtocolBadgeProps = ComponentPropsWithoutRef<"span"> & {
